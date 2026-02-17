@@ -174,13 +174,13 @@ textarea{min-height:96px;resize:vertical}
 <body>
 <div class="sticky-header">
   <div style="display:flex;align-items:center;gap:12px">
-    <a href="job_dashboard.html" class="btn" style="text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;font-weight:600;color:#24292f;background:#f6f8fa;border:1px solid #d0d7de;">
-      ⬅️ Job Monitor
-    </a>
-    <span style="font-weight:bold;font-size:16px">Resume Builder</span>
+    <span style="font-weight:bold;font-size:18px">Resume Builder</span>
   </div>
   
   <div class="sticky-actions">
+    <a href="job_dashboard.html" class="btn" style="text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:13px;font-weight:600;color:#24292f;background:#f6f8fa;border:1px solid #d0d7de;">
+      ⬅️ Job Monitor
+    </a>
     <button class="btn primary" id="b_preview" onclick="render()" style="padding:6px 12px;font-size:13px">Preview</button>
     <button class="btn primary" id="b_save" onclick="saveVersionPrompt()" style="padding:6px 12px;font-size:13px">Save</button>
     
@@ -296,6 +296,11 @@ textarea{min-height:96px;resize:vertical}
     <button onclick="toggleDrawer()" style="border:none;background:none;font-size:16px;cursor:pointer">✕</button>
   </div>
   <div class="drawer-body">
+    <div style="margin-bottom:16px;display:flex;gap:8px">
+      <button class="btn" onclick="document.getElementById('importFile').click()">📥 Import JSON</button>
+      <button class="btn" onclick="exportAllHistory()">📤 Export All</button>
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importHistory(this)">
+    </div>
     <div id="historyList" class="list"></div>
   </div>
 </div>
@@ -850,6 +855,51 @@ function deleteVersion(id){
   saveVersions(v)
   renderHistory()
 }
+
+function exportAllHistory(){
+  const v = loadVersions()
+  const json = JSON.stringify(v, null, 2)
+  const blob = new Blob([json], {type: 'application/json'})
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `resume_history_backup_${Date.now()}.json`
+  document.body.appendChild(a); a.click(); a.remove()
+}
+
+function importHistory(input){
+  const file = input.files[0]
+  if(!file) return
+  const reader = new FileReader()
+  reader.onload = function(e){
+    try {
+      const json = JSON.parse(e.target.result)
+      let newVersions = []
+      if(Array.isArray(json)){
+        newVersions = json
+      } else if(typeof json === 'object' && json.data){
+        newVersions = [json]
+      } else {
+        alert('Invalid JSON format')
+        return
+      }
+      
+      const current = loadVersions()
+      // Merge: concat new ones to existing
+      const combined = [...newVersions, ...current]
+      // Remove duplicate IDs
+      const unique = Array.from(new Map(combined.map(item => [item.id, item])).values())
+      
+      saveVersions(unique.sort((a,b)=>b.createdAt - a.createdAt))
+      renderHistory()
+      alert('History imported successfully!')
+    } catch(err){
+      alert('Error parsing JSON: ' + err.message)
+    }
+  }
+  reader.readAsText(file)
+  input.value = ''
+}
+
 // initialize history on load
 renderHistory()
 </script>
