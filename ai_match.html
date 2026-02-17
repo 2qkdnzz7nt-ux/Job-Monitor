@@ -97,10 +97,15 @@
     </div>
   </div>
   
-  <!-- Main: Analysis & Tailoring -->
+  <!-- Main Content - Analysis -->
   <div class="main">
     <div class="main-header">
-      <div id="activeJobTitle" style="font-weight:bold; font-size:18px">Select a job to analyze</div>
+      <div style="flex:1">
+        <div id="activeJobTitle" style="font-weight:bold; font-size:18px">Select a job to analyze</div>
+        <a id="jobLink" href="#" target="_blank" style="font-size:13px; display:none; color:#0969da; text-decoration:none; margin-top:4px; align-items:center; gap:4px">
+          🔗 View Original Job Posting
+        </a>
+      </div>
       <button class="btn primary" onclick="runTailoring()" id="tailorBtn" disabled>✨ Auto-Tailor Resume</button>
     </div>
     
@@ -321,6 +326,13 @@ function selectJob(job, el) {
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('workspace').style.display = 'flex';
   document.getElementById('activeJobTitle').innerText = `${job.title} @ ${job.company}`;
+  
+  // Set Job Link
+  const jobLink = document.getElementById('jobLink');
+  jobLink.style.display = 'inline-flex';
+  // Use Google Jobs Search for best coverage
+  jobLink.href = `https://www.google.com/search?q=${encodeURIComponent(job.title + " " + job.company + " careers")}&ibp=htl;jobs`;
+  
   document.getElementById('tailorBtn').disabled = false;
   document.getElementById('jobDesc').innerText = job.desc;
   
