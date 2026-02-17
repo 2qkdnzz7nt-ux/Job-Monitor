@@ -69,6 +69,14 @@
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   
   .empty-state { text-align: center; padding: 40px; color: #57606a; }
+  
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    .resume-preview { margin: 0; padding: 20px; box-shadow: none; max-width: 100%; min-height: auto; }
+    @page { margin: 0; size: auto; }
+  }
 </style>
 </head>
 <body>
@@ -138,10 +146,13 @@
       
       <!-- Right Panel: Output -->
       <div class="panel" style="flex: 1.2; padding: 0;">
-        <div style="padding: 16px; border-bottom: 1px solid #d0d7de; background: #fff;">
-          <div class="tabs">
+        <div style="padding: 16px; border-bottom: 1px solid #d0d7de; background: #fff; display: flex; justify-content: space-between; align-items: flex-end;">
+          <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
             <div class="tab active" onclick="switchTab('resume')" id="tabResume">📄 Tailored Resume</div>
             <div class="tab" onclick="switchTab('coverletter')" id="tabCover">✉️ Cover Letter</div>
+          </div>
+          <div id="actionButtons" style="display:flex; gap:8px;">
+            <!-- Buttons injected by switchTab -->
           </div>
         </div>
         
@@ -172,6 +183,8 @@
 // --- Data & State ---
 let currentResume = null;
 let currentJob = null;
+let tailoredResumeData = null;
+let tailoredCoverLetterText = "";
 const MOCK_JOBS = [
   {
     id: 1,
@@ -343,7 +356,9 @@ function selectJob(job, el) {
   document.getElementById('tabCover').classList.remove('active');
   document.getElementById('tailoredResumePreview').innerHTML = '<div style="color:#57606a;text-align:center;margin-top:40px">Click "Auto-Tailor Resume" to generate optimized version.</div>';
   
+  tailoredResumeData = null; // Reset
   analyzeMatch();
+  updateActionButtons();
 }
 
 function analyzeMatch() {
@@ -428,6 +443,8 @@ function generateTailoredResume() {
   if (missing.length > 0) {
      d.skills.unshift({ name: "Targeted Skills (" + currentJob.company + ")", level: missing.join(', ') });
   }
+  
+  tailoredResumeData = d;
   
   // Render Resume (Reusing logic from resume_form.html, simplified here)
   const root = document.getElementById('tailoredResumePreview');
@@ -523,6 +540,66 @@ ${d.name}
   `;
   
   document.getElementById('coverLetterPreview').innerText = text.trim();
+  tailoredCoverLetterText = text.trim();
+  
+  // Update Buttons
+  updateActionButtons();
+}
+
+function updateActionButtons() {
+  const container = document.getElementById('actionButtons');
+  container.innerHTML = '';
+  
+  if (!tailoredResumeData) return;
+  
+  const isResume = document.getElementById('tabResume').classList.contains('active');
+  
+  if (isResume) {
+    container.innerHTML = `
+      <button class="btn" onclick="saveToHistory()">💾 Save to History</button>
+      <button class="btn" onclick="printContent('tailoredResumePreview')">📥 Download PDF</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="btn" onclick="copyText()">📋 Copy Text</button>
+      <button class="btn" onclick="printContent('coverLetterPreview')">📥 Download PDF</button>
+    `;
+  }
+}
+
+function saveToHistory() {
+  if (!tailoredResumeData || !currentJob) return;
+  
+  const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+  const newVersion = {
+    name: `${tailoredResumeData.name} - ${currentJob.company} (Tailored)`,
+    createdAt: new Date().toISOString(),
+    data: tailoredResumeData
+  };
+  
+  versions.push(newVersion);
+  localStorage.setItem('resume_versions', JSON.stringify(versions));
+  
+  alert('Resume saved to Resume Builder History!');
+  loadResumeVersions(); // Refresh dropdown
+}
+
+function printContent(elementId) {
+  const content = document.getElementById(elementId);
+  const originalId = content.id;
+  
+  // Assign ID for print media query
+  content.id = 'printArea';
+  window.print();
+  
+  // Restore ID
+  content.id = originalId;
+}
+
+function copyText() {
+  navigator.clipboard.writeText(tailoredCoverLetterText).then(() => {
+    alert('Cover Letter copied to clipboard!');
+  });
 }
 
 function switchTab(tab) {
@@ -536,6 +613,7 @@ function switchTab(tab) {
     document.getElementById('viewResume').style.display = 'none';
     document.getElementById('viewCover').style.display = 'block';
   }
+  updateActionButtons();
 }
 </script>
 
