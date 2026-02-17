@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Monitor - 24h Early Access</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:#24292f;background:#f6f8fa;margin:0}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.header h1{font-size:24px;margin:0}
+.card{background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card h2{font-size:18px;margin-top:0;border-bottom:1px solid #eaeef2;padding-bottom:10px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px}
+.btn{display:inline-block;padding:8px 16px;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap;vertical-align:middle;cursor:pointer;user-select:none;border:1px solid;border-radius:6px;text-decoration:none;transition:.2s}
+.btn-primary{color:#fff;background-color:#2da44e;border-color:rgba(27,31,35,0.15)}
+.btn-outline{color:#24292f;background-color:#f6f8fa;border-color:rgba(27,31,35,0.15)}
+.btn:hover{opacity:0.9}
+.search-box{display:flex;gap:10px;margin-bottom:20px}
+.search-input{flex:1;padding:8px 12px;border:1px solid #d0d7de;border-radius:6px;font-size:14px}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tag-section{margin-bottom:12px}
+.tag-title{font-size:12px;font-weight:600;color:#57606a;margin-bottom:6px;display:block}
+.tag{background:#ddf4ff;color:#0969da;padding:4px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid transparent}
+.tag.active{background:#0969da;color:#fff}
+.job-list{list-style:none;padding:0;margin:0}
+.scroll-list{max-height:400px;overflow-y:auto;border:1px solid #eaeef2;border-radius:6px;padding:0 12px}
+.job-item{border-bottom:1px solid #eaeef2;padding:12px 0;display:flex;justify-content:space-between;align-items:center}
+.job-item:last-child{border-bottom:none}
+.job-title{font-weight:600;color:#0969da;text-decoration:none}
+.job-meta{font-size:12px;color:#57606a;margin-top:4px}
+.status-badge{font-size:11px;padding:2px 6px;border-radius:4px;background:#afb8c1;color:#fff;margin-left:8px}
+.status-new{background:#2da44e}
+.col-2{display:grid;grid-template-columns:3fr 1fr;gap:20px}
+/* Tag Edit Mode Styles */
+.tag-remove { margin-left: 4px; color: #cf222e; font-weight: bold; cursor: pointer; display: none; }
+.editing .tag-remove { display: inline; }
+.tag-add-btn { background: #fff; color: #0969da; border: 1px dashed #0969da; padding: 4px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; display: none; margin-left: 8px; }
+.editing .tag-add-btn { display: inline-block; }
+.editing .tag { cursor: default; padding-right: 8px; }
+@media(max-width:768px){.col-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>🚀 Job Monitor (24h Fresh)</h1>
+      <div style="font-size:14px;color:#57606a;margin-top:4px">抢先投递：监控各大平台过去24小时发布的职位</div>
+    </div>
+    <div>
+      <a href="resume_form.html" class="btn btn-outline">My Resume</a>
+    </div>
+  </div>
+
+  <div class="col-2">
+    <!-- Main Search Area -->
+    <div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eaeef2;margin-bottom:16px;padding-bottom:10px">
+          <h2 style="border:none;margin:0;padding:0">⚡ One-Click Early Access (一键直达)</h2>
+          <button id="editTagsBtn" onclick="toggleEditMode()" class="btn btn-outline" style="font-size:12px;padding:4px 10px">Edit Tags ✏️</button>
+        </div>
+        
+        <div class="search-box">
+          <input type="text" id="keywords" class="search-input" value="Software Engineer Intern" placeholder="e.g. Data Scientist Intern">
+          <input type="text" id="location" class="search-input" value="United States" placeholder="Location" style="max-width:140px">
+        </div>
+        
+        <div id="quickTags"></div>
+        
+        <div class="grid">
+          <a href="#" onclick="openSearch('linkedin')" class="btn btn-outline" style="text-align:center">
+            LinkedIn (Past 24h) 🔗
+          </a>
+          <a href="#" onclick="openSearch('indeed')" class="btn btn-outline" style="text-align:center">
+            Indeed (Past 24h) 🔗
+          </a>
+          <a href="#" onclick="openSearch('glassdoor')" class="btn btn-outline" style="text-align:center">
+            Glassdoor (Past 24h) 🔗
+          </a>
+          <a href="#" onclick="openSearch('google')" class="btn btn-outline" style="text-align:center">
+            Google Jobs (Past 24h) 🔗
+          </a>
+          <a href="#" onclick="openSearch('handshake')" class="btn btn-outline" style="text-align:center">
+            Handshake (New) 🔗
+          </a>
+          <a href="#" onclick="openSearch('simplify')" class="btn btn-outline" style="text-align:center">
+            Simplify.jobs (New) 🔗
+          </a>
+        </div>
+        <p style="font-size:12px;color:#57606a;margin-top:12px">
+            * 点击上方按钮将直接跳转到对应平台的“过去24小时”筛选结果页，助你第一时间发现新职位。
+          </p>
+        </div>
+
+        <!-- Smart Search Tools -->
+        <div class="card">
+          <h2>🕵️‍♂️ Hidden Gem Search (ATS X-Ray)</h2>
+          <div style="background:#f1f8ff;padding:12px;border-radius:6px;margin-bottom:16px;font-size:13px;border:1px solid #c8e1ff;color:#24292f">
+             <div style="margin-bottom:4px"><strong>🔍 原理 (Why it works):</strong> 很多初创和科技公司只在自己的 ATS (Greenhouse/Lever) 发布职位，LinkedIn 抓取往往有延迟甚至遗漏。此功能利用 Google 高级搜索直接“透视”这些招聘系统的后台数据。</div>
+             <div style="margin-bottom:4px"><strong>✨ 优势 (Benefit):</strong> 极大地减少竞争，挖掘 90% 求职者没看到的隐藏机会（避免中间商赚差价）。</div>
+             <div><strong>👉 用法 (How to use):</strong> 在上方输入关键词 (如 "Bioinformatics Intern") -> 点击下方对应系统的按钮 -> 直达系统后台过去一周内发布的新职位。</div>
+          </div>
+          <div class="grid">
+            <a href="#" onclick="openSearch('greenhouse')" class="btn btn-outline" style="text-align:center">
+              Search Greenhouse 🟢
+            </a>
+            <a href="#" onclick="openSearch('lever')" class="btn btn-outline" style="text-align:center">
+              Search Lever 🟠
+            </a>
+            <a href="#" onclick="openSearch('workday')" class="btn btn-outline" style="text-align:center">
+              Search Workday 🔵
+            </a>
+            <a href="#" onclick="openSearch('ashby')" class="btn btn-outline" style="text-align:center">
+              Search Ashby 🟣
+            </a>
+          </div>
+        </div>
+
+        <!-- Direct Career Portals -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eaeef2;margin-bottom:16px;padding-bottom:10px">
+            <h2 style="border:none;margin:0;padding:0">🧬 Target Company Portals (Direct Apply)</h2>
+            <button id="editPortalsBtn" onclick="togglePortalEditMode()" class="btn btn-outline" style="font-size:12px;padding:4px 10px">Edit Links ✏️</button>
+          </div>
+          <div style="background:#fff8c5;padding:12px;border-radius:6px;margin-bottom:16px;font-size:13px;border:1px solid #d4a72c40;color:#24292f">
+             <div style="margin-bottom:4px"><strong>🏢 原理 (Why it works):</strong> 大厂官网永远是最准、最快的。第三方平台往往充斥着过期信息。</div>
+             <div style="margin-bottom:4px"><strong>✨ 优势 (Benefit):</strong> 官网直投的简历权重最高，且避免被第三方系统误过滤。</div>
+             <div><strong>👉 用法 (How to use):</strong> 建议每周一/周三定期检查这些顶级公司官网，不要错过任何机会。</div>
+          </div>
+          <div id="directPortals" class="tag-cloud"></div>
+        </div>
+
+        <!-- Silicon Valley Startups (VC Backed) -->
+        <div class="card">
+          <h2 style="border:none;margin:0 0 16px 0;padding:0">🦄 Silicon Valley Startups (VC Backed)</h2>
+          <div style="background:#fff0e5;padding:12px;border-radius:6px;margin-bottom:16px;font-size:13px;border:1px solid #ffccaa40;color:#24292f">
+             <div style="margin-bottom:4px"><strong>💡 聪明策略 (Smart Strategy):</strong> 初创公司 (Startups) 往往比大厂更愿意给新人机会，且流程极快。</div>
+             <div style="margin-bottom:4px"><strong>💰 跟着钱走 (Follow the Money):</strong> 重点关注 <strong>Y Combinator</strong> 和 <strong>顶级 VC (Sequoia, a16z)</strong> 投资的公司。这些公司刚拿到融资，资金充足，正在疯狂扩张，倒闭风险相对小。</div>
+          </div>
+          
+          <div class="grid" style="margin-bottom:16px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:flex-start; gap:12px; background:#f6f8fa; padding:12px; border-radius:6px;">
+               <a href="https://www.ycombinator.com/jobs?role=engineering" target="_blank" class="btn btn-outline" style="min-width:180px; text-align:center; border-color:#f26522; color:#f26522; text-decoration:none; white-space:nowrap;">
+                  Y Combinator Jobs 🍊
+               </a>
+               <div style="font-size:13px; color:#57606a; line-height:1.5;">
+                  <strong>黄金标准 (Gold Standard)。</strong> 这里只列出 YC 孵化的公司，质量极高。建议搜索 "Intern" 或 "Engineer"。
+               </div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:12px; background:#f6f8fa; padding:12px; border-radius:6px;">
+               <a href="https://wellfound.com/jobs" target="_blank" class="btn btn-outline" style="min-width:180px; text-align:center; text-decoration:none; white-space:nowrap;">
+                  Wellfound (AngelList) ✌️
+               </a>
+               <div style="font-size:13px; color:#57606a; line-height:1.5;">
+                  <strong>初创企业的大本营 (Startup Hub)。</strong> 您可以创建 Profile，很多时候创始人会直接私信您。
+               </div>
+            </div>
+
+            <div style="display:flex; align-items:flex-start; gap:12px; background:#f6f8fa; padding:12px; border-radius:6px;">
+               <a href="https://www.google.com/search?q=site:news.ycombinator.com+%22who+is+hiring%22+intern&tbs=qdr:m" target="_blank" class="btn btn-outline" style="min-width:180px; text-align:center; text-decoration:none; white-space:nowrap;">
+                  Hacker News Search 🗞️
+               </a>
+               <div style="font-size:13px; color:#57606a; line-height:1.5;">
+                  <strong>硬核技术岗 (Hardcore Tech)。</strong> 这是 YC 旗下的论坛，每月发布的 "Who is hiring" 帖子是硅谷技术圈的风向标。我为您做了一个 <strong>定制搜索链接</strong>，直接筛选过去一个月的实习机会。
+               </div>
+            </div>
+          </div>
+
+          <div class="tag-section">
+            <span class="tag-title" style="display:block;margin-bottom:8px;font-weight:600;color:#57606a">🏦 Top VC Portfolio Boards (顶级风投人才库)</span>
+            <div class="tag-cloud">
+              <a href="https://jobs.sequoiacap.com/" target="_blank" class="tag" style="text-decoration:none">Sequoia Capital 🔗</a>
+              <a href="https://startups.a16z.com/jobs" target="_blank" class="tag" style="text-decoration:none">a16z (Andreessen Horowitz) 🔗</a>
+              <a href="https://greylock.com/portfolio-jobs/" target="_blank" class="tag" style="text-decoration:none">Greylock Partners 🔗</a>
+              <a href="https://www.kleinerperkins.com/careers/" target="_blank" class="tag" style="text-decoration:none">Kleiner Perkins 🔗</a>
+              <a href="https://jobs.lightspeedvp.com/" target="_blank" class="tag" style="text-decoration:none">Lightspeed Ventures 🔗</a>
+            </div>
+          </div>
+        </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+           <h2>🐙 GitHub Internship Monitor (Summer 2026)</h2>
+           <span id="refresh-timer" style="font-size:12px;color:#57606a">Next update: 60s</span>
+        </div>
+        <div style="margin-bottom:12px;font-size:13px;color:#57606a">
+          Fetching from <a href="https://github.com/SimplifyJobs/Summer2026-Internships" target="_blank">SimplifyJobs/Summer2026-Internships</a>...
+        </div>
+        <div id="github-feed" class="job-list scroll-list">
+          <div style="text-align:center;padding:20px;color:#57606a">Loading latest commits...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar: Tracker -->
+    <div>
+      <div class="card">
+        <h2>📌 My Tracker</h2>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+           <input id="track-company" class="search-input" placeholder="Company" style="font-size:13px">
+           <button class="btn btn-primary" onclick="addTrack()" style="padding:4px 12px">+</button>
+        </div>
+        <ul id="tracker-list" class="job-list scroll-list">
+          <!-- Tracker items will go here -->
+        </ul>
+      </div>
+      
+      <div class="card">
+        <h2>💡 Tips & Strategy</h2>
+        <div style="background:#f0f9eb;padding:8px;border-radius:6px;margin-bottom:12px;font-size:12px;border:1px solid #d4e8d2;color:#24292f">
+          <strong>🏆 Pro Strategy (必胜组合拳):</strong><br>
+          先扫 LinkedIn (One-Click Early Access) -> 再挖隐藏职位 (ATS X-Ray) -> 最后查大厂官网 (Direct Portals)。覆盖 90% 机会！
+        </div>
+        <ul style="font-size:13px;padding-left:20px;color:#57606a;margin:0">
+          <li>Try "Early Career" or "New Grad" keywords.</li>
+          <li>Check company career pages on Mondays.</li>
+          <li>Use the "Freshman" tag for 1st-year friendly roles.</li>
+          <li><b>Ag/Bio Eng:</b> Search "AgTech Intern" or "Bioinformatics Intern".</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- Quick Search Logic ---
+// Removed simple setKey function here, moved below to handle special links
+function openSearch(platform){
+  const k = encodeURIComponent(document.getElementById('keywords').value);
+  const l = encodeURIComponent(document.getElementById('location').value);
+  let url = '';
+  
+  switch(platform){
+    case 'linkedin':
+      // f_TPR=r86400 means past 24h
+      url = `https://www.linkedin.com/jobs/search/?keywords=${k}&location=${l}&f_TPR=r86400`;
+      break;
+    case 'indeed':
+      // fromage=1 means past 1 day
+      url = `https://www.indeed.com/jobs?q=${k}&l=${l}&fromage=1`;
+      break;
+    case 'glassdoor':
+      // minRating=0, radius=0, fromAge=1
+      url = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${k}&locT=&locId=&jobType=all&fromAge=1`;
+      break;
+    case 'google':
+      // Google Jobs query syntax
+      url = `https://www.google.com/search?q=${k}+jobs+near+${l}&ibp=htl;jobs#htivrt=jobs&htichips=date_posted:today`;
+      break;
+    case 'handshake':
+      // Handshake job search (requires login usually)
+      url = `https://app.joinhandshake.com/stu/postings?query=${k}&sort=posted_date_desc`;
+      break;
+    case 'simplify':
+       url = `https://simplify.jobs/jobs?q=${k}&sort=newest`;
+       break;
+    case 'greenhouse':
+        // site:boards.greenhouse.io (keywords)
+        // 移除地点限制，放宽时间范围到过去一个月(qdr:m)，避免搜索结果为空
+        url = `https://www.google.com/search?q=site:boards.greenhouse.io+${k}&tbs=qdr:m`; 
+        break;
+     case 'lever':
+        // site:jobs.lever.co (keywords)
+        url = `https://www.google.com/search?q=site:jobs.lever.co+${k}&tbs=qdr:m`;
+        break;
+     case 'workday':
+        // site:myworkdayjobs.com (keywords)
+        url = `https://www.google.com/search?q=site:myworkdayjobs.com+${k}&tbs=qdr:m`;
+        break;
+     case 'ashby':
+        // site:jobs.ashbyhq.com (keywords)
+        url = `https://www.google.com/search?q=site:jobs.ashbyhq.com+${k}&tbs=qdr:m`;
+        break;
+  }
+  if(url) window.open(url, '_blank');
+}
+
+// --- Tag Management System ---
+const DEFAULT_TAGS = [
+  {
+    title: "🔥 Popular (Freshman Friendly)",
+    tags: [
+      { label: "Summer 2026 Intern", value: "Summer 2026 Intern" },
+      { label: "Freshman Intern", value: "Freshman Internship" },
+      { label: "Engineering Intern", value: "Engineering Intern" },
+      { label: "STEM Intern", value: "STEM Intern" },
+      { label: "Google STEP 🔗", value: "STEP Intern" },
+      { label: "Meta University 🔗", value: "FBU Intern" },
+      { label: "Microsoft Explore 🔗", value: "Microsoft Explore Intern" }
+    ]
+  },
+  {
+    title: "🎓 Early Career & New Grad",
+    tags: [
+      { label: "Early Career Engineer", value: "Early Career Engineer" },
+      { label: "New Grad Engineer", value: "New Grad Engineer" },
+      { label: "Entry Level Engineer", value: "Entry Level Engineer" },
+      { label: "APM (New Grad)", value: "Associate Product Manager" },
+      { label: "Rotational Programs", value: "Rotational Program" }
+    ]
+  },
+  {
+    title: "🌾 Ag/Bio Engineering & Biotech Roles (Major Related)",
+    tags: [
+      { label: "AgTech", value: "AgTech Intern" },
+      { label: "Bioinformatics", value: "Bioinformatics Intern" },
+      { label: "Comp Bio", value: "Computational Biology Intern" },
+      { label: "Precision Ag", value: "Precision Agriculture Intern" },
+      { label: "Food Science", value: "Food Science Intern" },
+      { label: "Ag Engineering", value: "Agricultural Engineering Intern" },
+      { label: "Process Dev", value: "Process Development Intern" },
+      { label: "Lab Automation", value: "Lab Automation Engineer Intern" },
+      { label: "Digital Health", value: "Digital Health Intern" },
+      { label: "R&D General", value: "R&D Intern" },
+      { label: "Quality Eng", value: "Quality Engineer Intern" },
+      { label: "Manufacturing", value: "Manufacturing Engineer Intern" }
+    ]
+  },
+  {
+    title: "📊 Data & Product",
+    tags: [
+      { label: "Data Science", value: "Data Science Intern" },
+      { label: "Data Analyst", value: "Data Analyst Intern" },
+      { label: "Product Manager", value: "Product Manager Intern" },
+      { label: "Business Analyst", value: "Business Analyst Intern" }
+    ]
+  },
+  {
+    title: "📱 Mobile & Web",
+    tags: [
+      { label: "iOS Dev", value: "iOS Developer Intern" },
+      { label: "Android Dev", value: "Android Developer Intern" },
+      { label: "Frontend", value: "Frontend Engineer Intern" },
+      { label: "Full Stack", value: "Full Stack Intern" }
+    ]
+  }
+];
+
+let currentTags = [];
+let isEditMode = false;
+
+function initTags() {
+  const saved = localStorage.getItem('my_job_tags');
+  if (saved) {
+    try {
+      currentTags = JSON.parse(saved);
+    } catch(e) {
+      console.error("Error parsing tags", e);
+      currentTags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+    }
+  } else {
+    currentTags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+  }
+  renderTags();
+}
+
+function renderTags() {
+  const container = document.getElementById('quickTags');
+  container.innerHTML = '';
+  
+  const btn = document.getElementById('editTagsBtn');
+  if (isEditMode) {
+    container.classList.add('editing');
+    btn.innerText = 'Done ✅';
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+  } else {
+    container.classList.remove('editing');
+    btn.innerText = 'Edit Tags ✏️';
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-outline');
+  }
+
+  currentTags.forEach((section, sIdx) => {
+    const secDiv = document.createElement('div');
+    secDiv.className = 'tag-section';
+    
+    const title = document.createElement('span');
+    title.className = 'tag-title';
+    title.innerText = section.title;
+    secDiv.appendChild(title);
+    
+    const cloud = document.createElement('div');
+    cloud.className = 'tag-cloud';
+    
+    section.tags.forEach((tag, tIdx) => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      if (!isEditMode && tag.value === document.getElementById('keywords').value) {
+        span.classList.add('active');
+      }
+      
+      const text = document.createTextNode(tag.label);
+      span.appendChild(text);
+      
+      const removeBtn = document.createElement('span');
+      removeBtn.className = 'tag-remove';
+      removeBtn.innerText = '×';
+      removeBtn.onclick = (e) => {
+        e.stopPropagation();
+        removeTag(sIdx, tIdx);
+      };
+      span.appendChild(removeBtn);
+      
+      span.onclick = () => {
+        if (!isEditMode) {
+            setKey(tag.value);
+            document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+            span.classList.add('active');
+        }
+      };
+      
+      cloud.appendChild(span);
+    });
+    
+    const addBtn = document.createElement('span');
+    addBtn.className = 'tag-add-btn';
+    addBtn.innerText = '+ Add Tag';
+    addBtn.onclick = () => addTag(sIdx);
+    cloud.appendChild(addBtn);
+    
+    secDiv.appendChild(cloud);
+    container.appendChild(secDiv);
+  });
+}
+
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  renderTags();
+}
+
+function addTag(sIdx) {
+  const label = prompt("Enter tag label (e.g. 'Python Intern'):");
+  if (!label) return;
+  const value = prompt("Enter search keyword (e.g. 'Python Internship'):", label);
+  if (!value) return;
+  
+  currentTags[sIdx].tags.push({ label, value });
+  saveTags();
+  renderTags();
+}
+
+function removeTag(sIdx, tIdx) {
+  if (confirm(`Delete tag "${currentTags[sIdx].tags[tIdx].label}"?`)) {
+    currentTags[sIdx].tags.splice(tIdx, 1);
+    saveTags();
+    renderTags();
+  }
+}
+
+function saveTags() {
+  localStorage.setItem('my_job_tags', JSON.stringify(currentTags));
+}
+
+// --- Portal Management System ---
+const DEFAULT_PORTALS = [
+  // Tech Giants
+  { name: "Google Careers 🔗", url: "https://www.google.com/about/careers/applications/jobs/results/" },
+  { name: "Amazon Jobs 🔗", url: "https://www.amazon.jobs/en/" },
+  { name: "Microsoft Careers 🔗", url: "https://careers.microsoft.com/students/us/en" },
+  { name: "Apple Careers 🔗", url: "https://www.apple.com/careers/us/" },
+  { name: "Meta Careers 🔗", url: "https://www.metacareers.com/jobs/" },
+  { name: "Tesla Careers 🔗", url: "https://www.tesla.com/careers/search" },
+  { name: "NVIDIA Careers 🔗", url: "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite" },
+  
+  // Biotech & Pharma (ABE Focus)
+  { name: "Genentech Careers 🔗", url: "https://careers.gene.com/us/en/search-results" },
+  { name: "Pfizer Careers 🔗", url: "https://www.pfizer.com/about/careers/search-results" },
+  { name: "Moderna Careers 🔗", url: "https://careers.modernatx.com/" },
+  { name: "Thermo Fisher 🔗", url: "https://jobs.thermofisher.com/global/en/search-results" },
+  { name: "Illumina Careers 🔗", url: "https://illumina.wd1.myworkdayjobs.com/illumina-careers" },
+  { name: "Boston Scientific 🔗", url: "https://careers.bostonscientific.com/" },
+  { name: "Regeneron Careers 🔗", url: "https://careers.regeneron.com/" },
+  { name: "Gilead Careers 🔗", url: "https://gilead.wd1.myworkdayjobs.com/gileadcareers" }
+];
+
+let currentPortals = [];
+let isPortalEditMode = false;
+
+function initPortals() {
+  const saved = localStorage.getItem('my_job_portals');
+  if (saved) {
+    try {
+      currentPortals = JSON.parse(saved);
+    } catch(e) {
+      console.error("Error parsing portals", e);
+      currentPortals = JSON.parse(JSON.stringify(DEFAULT_PORTALS));
+    }
+  } else {
+    currentPortals = JSON.parse(JSON.stringify(DEFAULT_PORTALS));
+  }
+  renderPortals();
+}
+
+function renderPortals() {
+  const container = document.getElementById('directPortals');
+  container.innerHTML = '';
+  
+  const btn = document.getElementById('editPortalsBtn');
+  if (isPortalEditMode) {
+    container.classList.add('editing');
+    btn.innerText = 'Done ✅';
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+  } else {
+    container.classList.remove('editing');
+    btn.innerText = 'Edit Links ✏️';
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-outline');
+  }
+
+  currentPortals.forEach((portal, idx) => {
+    const a = document.createElement('a');
+    a.className = 'tag';
+    
+    if (isPortalEditMode) {
+      a.href = "javascript:void(0)";
+      a.style.cursor = "default";
+      a.style.textDecoration = "none";
+    } else {
+      a.href = portal.url;
+      a.target = "_blank";
+    }
+    
+    const text = document.createTextNode(portal.name);
+    a.appendChild(text);
+    
+    const removeBtn = document.createElement('span');
+    removeBtn.className = 'tag-remove';
+    removeBtn.innerText = '×';
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      removePortal(idx);
+    };
+    a.appendChild(removeBtn);
+    
+    container.appendChild(a);
+  });
+  
+  const addBtn = document.createElement('span');
+  addBtn.className = 'tag-add-btn';
+  addBtn.innerText = '+ Add Link';
+  addBtn.onclick = addPortal;
+  container.appendChild(addBtn);
+}
+
+function togglePortalEditMode() {
+  isPortalEditMode = !isPortalEditMode;
+  renderPortals();
+}
+
+function addPortal() {
+  const name = prompt("Enter company name (e.g. 'Bayer Careers'):");
+  if (!name) return;
+  const url = prompt("Enter career page URL:", "https://");
+  if (!url) return;
+  
+  currentPortals.push({ name: name + " 🔗", url });
+  savePortals();
+  renderPortals();
+}
+
+function removePortal(idx) {
+  if (confirm(`Delete link "${currentPortals[idx].name}"?`)) {
+    currentPortals.splice(idx, 1);
+    savePortals();
+    renderPortals();
+  }
+}
+
+function savePortals() {
+  localStorage.setItem('my_job_portals', JSON.stringify(currentPortals));
+}
+
+// Initialize tags and portals
+initTags();
+initPortals();
+
+// Special handling for freshman programs
+const PROGRAM_LINKS = {
+  'STEP Intern': 'https://buildyourfuture.withgoogle.com/programs/step-internship',
+  'FBU Intern': 'https://www.metacareers.com/areas-of-work/facebook-university/',
+  'Microsoft Explore Intern': 'https://careers.microsoft.com/students/us/en/us-explore-microsoft-program'
+};
+
+function setKey(val){
+  // If it's a known program, open directly
+  if(PROGRAM_LINKS[val]){
+     if(confirm(`Go to official page for ${val}?`)){
+       window.open(PROGRAM_LINKS[val], '_blank');
+       return;
+     }
+  }
+  document.getElementById('keywords').value = val;
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+// Attempt to fetch raw content from GitHub. Note: Rate limits or CORS might apply.
+// We will try to fetch the README and parse the first few rows of the table.
+async function fetchGithubJobs(){
+  const feed = document.getElementById('github-feed');
+  // Fallback data in case fetch fails
+  const renderError = () => {
+    feed.innerHTML = `
+      <div style="padding:10px;font-size:13px">
+        Unable to fetch live data directly (CORS/Network).<br>
+        <a href="https://github.com/SimplifyJobs/Summer2025-Internships" target="_blank" style="color:#0969da">Click here to view the repo directly &rarr;</a>
+      </div>
+    `;
+  };
+
+  try {
+    // Using a reliable raw link. If this fails, we show the link.
+    const res = await fetch('https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/dev/README.md');
+    if(!res.ok) throw new Error('Failed to load');
+    const text = await res.text();
+    
+    // Simple parser for the markdown table
+    // Look for lines starting with | and containing links
+    const lines = text.split('\n');
+    let count = 0;
+    let html = '';
+    
+    // Find the start of the table (usually after "## ...")
+    let inTable = false;
+    for(let line of lines){
+      if(line.includes('| Company |')) { inTable = true; continue; }
+      if(inTable && line.trim().startsWith('|') && !line.includes('---')){
+        // Parse row: | Name | Role | Location | Application/Link | Date |
+        const cols = line.split('|').map(c=>c.trim()).filter(c=>c);
+        if(cols.length >= 3){
+          // Try to extract name and link
+          // Markdown link format: [Name](url)
+          const nameMatch = cols[0].match(/\[(.*?)\]\((.*?)\)/);
+          const name = nameMatch ? nameMatch[1] : cols[0];
+          const companyUrl = nameMatch ? nameMatch[2] : '#';
+          
+          const role = cols[1];
+          const location = cols[2];
+          // Check for "Closed" or "🔒"
+          if(line.includes('🔒') || line.toLowerCase().includes('closed')) continue;
+
+          html += `
+            <div class="job-item">
+              <div>
+                <a href="${companyUrl}" target="_blank" class="job-title">${name}</a>
+                <div class="job-meta">${role} · ${location}</div>
+              </div>
+              <button class="btn btn-primary" style="padding:2px 8px;font-size:12px" onclick="addTrack('${name} - ${role}')">Track</button>
+            </div>
+          `;
+          count++;
+          if(count >= 10) break; // Limit to 10 items
+        }
+      }
+    }
+    
+    if(count > 0){
+      feed.innerHTML = html + `<div style="text-align:center;padding:10px"><a href="https://github.com/SimplifyJobs/Summer2026-Internships" target="_blank" style="font-size:13px">View full list on GitHub &rarr;</a></div>`;
+    } else {
+      renderError();
+    }
+  } catch(e) {
+    console.error(e);
+    renderError();
+  }
+}
+
+// --- Tracker Logic ---
+function loadTrack(){
+  const t = JSON.parse(localStorage.getItem('job_tracker')||'[]');
+  const ul = document.getElementById('tracker-list');
+  ul.innerHTML = '';
+  t.forEach((item, idx) => {
+    // Check if item is an object or legacy string
+    const name = typeof item === 'string' ? item : item.name;
+    const status = typeof item === 'string' ? 'Saved' : item.status || 'Saved';
+    
+    const li = document.createElement('li');
+    li.className = 'job-item';
+    li.style.flexDirection = 'column';
+    li.style.alignItems = 'flex-start';
+    li.innerHTML = `
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+         <span style="font-size:13px;font-weight:600;cursor:pointer" onclick="setKey('${name.replace(/'/g, "\\'")}')">${name}</span>
+         <button onclick="delTrack(${idx})" style="border:none;background:none;color:#cf222e;cursor:pointer">×</button>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px">
+         <span class="status-badge ${status==='Applied'?'status-new':''}" style="cursor:pointer;background:${status==='Applied'?'#2da44e':'#afb8c1'}" onclick="toggleStatus(${idx}, '${status}')">${status}</span>
+         <a href="https://www.google.com/search?q=${encodeURIComponent(name)}+careers" target="_blank" style="font-size:11px;color:#0969da;text-decoration:none">Search ↗</a>
+      </div>
+    `;
+    ul.appendChild(li);
+  });
+}
+function toggleStatus(idx, current){
+   const t = JSON.parse(localStorage.getItem('job_tracker')||'[]');
+   const item = t[idx];
+   const name = typeof item === 'string' ? item : item.name;
+   const newStatus = current === 'Saved' ? 'Applied' : 'Saved';
+   t[idx] = { name, status: newStatus };
+   localStorage.setItem('job_tracker', JSON.stringify(t));
+   loadTrack();
+}
+function addTrack(val){
+  const v = val || document.getElementById('track-company').value;
+  if(!v) return;
+  const t = JSON.parse(localStorage.getItem('job_tracker')||'[]');
+  // Store as object {name, status}
+  t.unshift({name: v, status: 'Saved'});
+  localStorage.setItem('job_tracker', JSON.stringify(t));
+  document.getElementById('track-company').value = '';
+  loadTrack();
+}
+function delTrack(idx){
+  const t = JSON.parse(localStorage.getItem('job_tracker')||'[]');
+  t.splice(idx, 1);
+  localStorage.setItem('job_tracker', JSON.stringify(t));
+  loadTrack();
+}
+
+// Init
+fetchGithubJobs();
+loadTrack();
+
+// Auto Refresh Logic (every 60s)
+let timeLeft = 60;
+setInterval(() => {
+  timeLeft--;
+  if(timeLeft <= 0){
+    timeLeft = 60;
+    fetchGithubJobs();
+  }
+  document.getElementById('refresh-timer').innerText = `Next update: ${timeLeft}s`;
+}, 1000);
+
+
+</script>
+</body>
+</html>

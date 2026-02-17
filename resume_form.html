@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume Form</title>
+<style>
+/* Global box-sizing */
+  * { box-sizing: border-box; }
+  body{font-family:Arial,Segoe UI,Roboto,system-ui,-apple-system;line-height:1.6;background:#f7f7f7;color:#1f2328;margin:0}
+  /* Increased max-width for better two-column layout */
+  .wrap{max-width:1400px;margin:80px auto 24px;padding:0 16px;display:grid;grid-template-columns:1fr 1.2fr;gap:24px}
+.card{background:#fff;border:1px solid #d0d7de;border-radius:12px;box-shadow:0 1px 2px rgba(31,35,40,.04)}
+.card h2{margin:0;padding:14px 16px;border-bottom:1px solid #d8dee4;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.card .body{padding:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-1{grid-template-columns:1fr}
+.row{display:flex;gap:12px}
+label{font-size:13px;color:#57606a;margin-bottom:6px;display:block;letter-spacing:.2px}
+input,textarea,select{width:100%;border:1px solid #c9d1d9;border-radius:8px;padding:10px 12px;font-size:14px;background:#fff}
+textarea{min-height:96px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #d0d7de;background:#f6f8fa;color:#24292f;border-radius:8px;padding:10px 14px;font-size:14px;cursor:pointer}
+.btn.primary{background:#0969da;border-color:#0969da;color:#fff}
+.btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.list{display:flex;flex-direction:column;gap:14px}
+.item{border:1px dashed #d0d7de;border-radius:8px;padding:12px}
+.item-actions{display:flex;gap:8px;margin-top:8px}
+.preview{padding:20px}
+.resume{font-family:"Times New Roman", Times, serif; font-size:11pt; line-height:1.25; color:#000; padding:20px}
+.resume h1{font-size:20pt;margin:0 0 6px;text-align:center;text-transform:uppercase;letter-spacing:1px}
+.resume .contact-info{text-align:center;margin-bottom:16px;font-size:10pt}
+.resume h3{text-transform:uppercase;font-size:11pt;margin:14px 0 6px;border-bottom:1px solid #000;padding-bottom:2px;letter-spacing:0.5px;font-weight:bold}
+.resume ul{margin:2px 0 0 32px;padding:0}
+.resume li{margin:1px 0;font-size:10pt}
+.resume-row{display:flex;justify-content:space-between;align-items:baseline}
+.resume-bold{font-weight:bold}
+.resume-italic{font-style:italic}
+.resume-sub{margin-bottom:2px}
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.pill{display:inline-block;padding:4px 8px;border:1px solid #d0d7de;border-radius:999px;margin:2px;font-size:12px}
+.lang{display:flex;align-items:center;gap:8px}
+.lang select{border:1px solid #c9d1d9;border-radius:8px;padding:6px 10px;background:#fff}
+.lang-fab{position:fixed;top:12px;right:16px;z-index:1000;background:#fff;border:1px solid #d0d7de;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:8px 10px;display:flex;align-items:center;gap:8px}
+  /* Table fallback for Word layout */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+  td { vertical-align: baseline; }
+  td.left { text-align: left; }
+  td.right { text-align: right; }
+  
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-bottom: 1px solid #d0d7de;
+    padding: 12px 16px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .sticky-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  /* Dropdown Styles */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 140px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid #d0d7de;
+    z-index: 1001;
+  }
+  .dropdown-content button {
+    color: #24292f;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .dropdown-content button:hover {
+    background-color: #f6f8fa;
+  }
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* History Drawer */
+  .drawer {
+    position: fixed;
+    top: 60px; /* Below sticky header */
+    right: -400px;
+    bottom: 0;
+    width: 360px;
+    background: #fff;
+    border-left: 1px solid #d0d7de;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer.open {
+    right: 0;
+  }
+  .drawer-header {
+    padding: 16px;
+    border-bottom: 1px solid #d0d7de;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f6f8fa;
+  }
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .drawer-overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 998;
+    display: none;
+  }
+  .drawer-overlay.open {
+    display: block;
+  }
+  
+  @media print {
+    @page { margin: 0.45in 0.5in; size: auto; }
+    body { background: white; margin: 0; padding: 0; }
+    .wrap { display: block; max-width: 100%; margin: 0; padding: 0; width: 100%; }
+    .sticky-header, .btnbar, .btn, .grid, .grid-1, label, input, textarea, select, .card, .row, .drawer, .drawer-overlay { display: none !important; }
+    /* Only show resume-card and its children */
+    #resume-card { display: block !important; border: none; box-shadow: none; margin: 0; padding: 0; width: 100%; }
+    #resume-card h2 { display: none; }
+    #resume-card .preview { padding: 0; margin: 0; }
+    .resume { padding: 0; margin: 0; width: 100%; font-size: 10.8pt; line-height: 1.2; }
+    .resume h1 { font-size: 20pt; margin-bottom: 6px; }
+    .resume .contact-info { margin-bottom: 14px; font-size: 10pt; }
+    .resume h3 { margin: 12px 0 6px; font-size: 11pt; }
+    .resume ul { margin-top: 1px; }
+    .resume li { margin: 0.5px 0; font-size: 10pt; }
+    .resume-sub { margin-bottom: 1px; }
+  }
+</style>
+</head>
+<body>
+<div class="sticky-header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="job_dashboard.html" style="text-decoration:none;font-size:18px" title="Back to Job Monitor">🏠</a>
+    <span style="font-weight:bold;font-size:16px">Resume Builder</span>
+  </div>
+  
+  <div class="sticky-actions">
+    <button class="btn primary" id="b_preview" onclick="render()" style="padding:6px 12px;font-size:13px">Preview</button>
+    <button class="btn primary" id="b_save" onclick="saveVersionPrompt()" style="padding:6px 12px;font-size:13px">Save</button>
+    
+    <div class="dropdown">
+      <button class="btn" style="padding:6px 12px;font-size:13px">Export ▼</button>
+      <div class="dropdown-content">
+        <button id="b_md" onclick="download()">Download MD</button>
+        <button id="b_copy" onclick="copyMd()">Copy MD</button>
+        <button id="b_txt" onclick="downloadTxt()">Download TXT</button>
+        <button id="b_pdf" onclick="window.print()">Print / PDF</button>
+      </div>
+    </div>
+
+    <button class="btn" id="b_history_toggle" onclick="toggleDrawer()" style="padding:6px 12px;font-size:13px">History 🕒</button>
+    
+    <div style="border-left:1px solid #d0d7de;padding-left:12px;margin-left:4px;display:flex;align-items:center;gap:8px">
+      <span id="ui_lang_label" style="font-size:12px;color:#57606a">Language</span>
+      <select id="lang" onchange="applyLang()" style="padding:4px;font-size:12px">
+        <option value="en" selected>English</option>
+        <option value="zh">中文</option>
+        <option value="bi">Bilingual</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="wrap">
+  <div class="card">
+    <h2 id="h_fill">Fill Information</h2>
+    <div style="padding:0 16px;margin-top:8px">
+       <a href="https://docs.google.com/document/d/1azvJt51U2CbpvyO0ZkICqYFDhzdfGxU_lsPQTGhsn94/edit?tab=t.0" target="_blank" style="font-size:12px;color:#0969da;text-decoration:none">
+         Reference Template: MichaelScottResume (Google Doc) ↗
+       </a>
+    </div>
+    <div class="body">
+      <div class="grid">
+        <div>
+          <label id="l_name">Name</label>
+          <input id="name" placeholder="e.g., Alex Student">
+        </div>
+        <div>
+          <label id="l_email">Email</label>
+          <input id="email" placeholder="e.g., alex@university.edu">
+        </div>
+        <div>
+          <label id="l_phone">Phone</label>
+          <input id="phone" placeholder="e.g., (+1) 555-123-4567">
+        </div>
+        <div>
+          <label>LinkedIn</label>
+          <input id="linkedin" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div>
+          <label>GitHub</label>
+          <input id="github" placeholder="https://github.com/...">
+        </div>
+        <div>
+          <label id="l_site">Website</label>
+          <input id="website" placeholder="https://...">
+        </div>
+      </div>
+      <h3 style="margin-top:18px" id="h_edu">Education</h3>
+      <div id="eduList" class="list"></div>
+      <div class="btnbar">
+        <button class="btn" id="b_add_edu" onclick="addEdu()">Add Education</button>
+      </div>
+      <div class="grid-1">
+        <label id="l_courses">Relevant courses (comma separated)</label>
+        <input id="courses" placeholder="e.g., Calculus II, Data Structures, Mobile App Development">
+      </div>
+      <h3 style="margin-top:18px" id="h_exps">PROFESSIONAL EXPERIENCE</h3>
+      <div id="expList" class="list"></div>
+      <div class="btnbar">
+        <button class="btn" id="b_add_exp" onclick="addExp()">Add Experience</button>
+      </div>
+      <h3 style="margin-top:18px" id="h_projects">PROJECTS &amp; OUTSIDE EXPERIENCE</h3>
+      <div id="projList" class="list"></div>
+      <div class="btnbar">
+        <button class="btn" id="b_add_proj" onclick="addProj()">Add Project</button>
+      </div>
+      <h3 style="margin-top:18px" id="h_acts">ACTIVITIES &amp; LEADERSHIP</h3>
+      <div id="actList" class="list"></div>
+      <div class="btnbar">
+        <button class="btn" id="b_add_act" onclick="addAct()">Add Activity</button>
+      </div>
+      <h3 style="margin-top:18px" id="h_skills">SKILLS &amp; INTERESTS</h3>
+      <div id="skillList" class="list"></div>
+      <div class="btnbar">
+        <button class="btn" id="b_add_skill" onclick="addSkill()">Add Skill</button>
+      </div>
+      <div class="grid-1">
+        <label id="l_interests">Interests</label>
+        <input id="interests" placeholder="e.g., AI for Agriculture, Mobile Apps, Robotics">
+      </div>
+      <div class="grid-1">
+        <label id="l_languages">Languages</label>
+        <input id="languages" placeholder="e.g., Mandarin (Native), English (Fluent)">
+      </div>
+      <div class="btnbar" style="display:none"></div>
+    </div>
+  </div>
+  <div class="card" id="resume-card">
+    <h2 id="h_preview">Preview</h2>
+    <div class="preview">
+      <div id="resume" class="resume"></div>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<div class="drawer" id="historyDrawer">
+  <div class="drawer-header">
+    <h3 style="margin:0;font-size:16px" id="h_history_drawer">History</h3>
+    <button onclick="toggleDrawer()" style="border:none;background:none;font-size:16px;cursor:pointer">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div id="historyList" class="list"></div>
+  </div>
+</div>
+
+<script>
+let LANG='en'
+const I18N={
+  en:{h_fill:'Fill Information',ui_lang_label:'Language',l_name:'Name',l_email:'Email',l_phone:'Phone',l_site:'Website',l_summary:'Summary',h_edu:'EDUCATION',b_add_edu:'Add Education',h_courses:'Courses',l_courses:'Relevant courses (comma separated)',l_courses_preview:'Relevant courses',h_skills:'SKILLS & INTERESTS',b_add_skill:'Add Skill',h_projects:'PROJECTS & OUTSIDE EXPERIENCE',b_add_proj:'Add Project',h_exps:'PROFESSIONAL EXPERIENCE',b_add_exp:'Add Experience',h_acts:'ACTIVITIES & LEADERSHIP',b_add_act:'Add Activity',b_preview:'Preview',b_md:'MD',b_copy:'Copy',b_txt:'TXT',b_pdf:'PDF',b_save:'Save',h_preview:'Preview',h_history:'History',act_load:'Load',act_export:'Export JSON',act_delete:'Delete',s_overview:'Overview',s_edu:'EDUCATION',s_skills:'SKILLS & INTERESTS',s_projects:'PROJECTS & OUTSIDE EXPERIENCE',s_exps:'PROFESSIONAL EXPERIENCE',s_acts:'ACTIVITIES & LEADERSHIP'},
+  zh:{h_fill:'填写信息',ui_lang_label:'语言',l_name:'姓名',l_email:'邮箱',l_phone:'电话',l_site:'个人网站',l_summary:'个人概述',h_edu:'教育',b_add_edu:'添加教育经历',h_courses:'课程',l_courses:'相关课程（逗号分隔）',l_courses_preview:'相关课程',h_skills:'技能与兴趣',b_add_skill:'添加技能',h_projects:'项目与课外经历',b_add_proj:'添加项目',h_exps:'专业经历',b_add_exp:'添加经历',h_acts:'活动与领导力',b_add_act:'添加活动',b_preview:'预览',b_md:'MD',b_copy:'复制',b_txt:'TXT',b_pdf:'PDF',b_save:'保存',h_preview:'预览',h_history:'历史版本',act_load:'加载',act_export:'导出JSON',act_delete:'删除',s_overview:'概述',s_edu:'教育',s_skills:'技能与兴趣',s_projects:'项目与课外经历',s_exps:'专业经历',s_acts:'活动与领导力'}
+}
+function t(key){
+  const m=document.getElementById('lang').value
+  if(m==='bi') return I18N.en[key]+' / '+I18N.zh[key]
+  return I18N[m][key]
+}
+function el(tag, cls){const d=document.createElement(tag);if(cls)d.className=cls;return d}
+function addEdu(){
+  const it=el('div','item')
+  it.innerHTML=`<div style="text-align:right;margin-bottom:6px"><button type="button" onclick="this.closest('.item').remove();render()" style="cursor:pointer;color:#cf222e;background:none;border:none;font-size:12px;padding:0">✕ ${t('act_delete')}</button></div><div class="grid"><div><label id="edu_school">${t('s_edu')}</label><input placeholder="University"></div><div><label id="edu_city">City/State</label><input placeholder="City, State"></div><div><label id="edu_degree">Degree</label><input placeholder="B.S. / B.Eng."></div><div><label id="edu_major">Major</label><input placeholder="Major"></div><div><label id="edu_period">Period</label><input placeholder="2024 - 2028"></div><div><label>GPA</label><input placeholder="3.8/4.0"></div></div>`
+  document.getElementById('eduList').appendChild(it)
+  return it
+}
+function addSkill(){
+  const it=el('div','item')
+  it.innerHTML=`<div style="text-align:right;margin-bottom:6px"><button type="button" onclick="this.closest('.item').remove();render()" style="cursor:pointer;color:#cf222e;background:none;border:none;font-size:12px;padding:0">✕ ${t('act_delete')}</button></div><div class="grid"><div><label id="skill_name">Skill</label><input placeholder="Python / Mobile App / Calculus"></div><div><label id="skill_level">Level</label><select><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></div></div>`
+  document.getElementById('skillList').appendChild(it)
+  return it
+}
+function addProj(){
+  const it=el('div','item')
+  it.innerHTML=`<div style="text-align:right;margin-bottom:6px"><button type="button" onclick="this.closest('.item').remove();render()" style="cursor:pointer;color:#cf222e;background:none;border:none;font-size:12px;padding:0">✕ ${t('act_delete')}</button></div><div class="grid"><div><label>Project</label><input placeholder="Job Searcher / Mobile App"></div><div><label>Title</label><input placeholder="Full Stack Developer"></div><div><label>Location</label><input placeholder="Remote / City, State"></div><div><label>Period</label><input placeholder="2025.09 - 2025.12"></div></div><div class="grid"><div><label>Tech Stack</label><input placeholder="Python, HTML/CSS/JS"></div><div><label>Link</label><input placeholder="https://..."></div></div><div><label>Description</label><textarea placeholder="Action-oriented bullets with impact"></textarea></div>`
+  document.getElementById('projList').appendChild(it)
+  return it
+}
+function addExp(){
+  const it=el('div','item')
+  it.innerHTML=`<div style="text-align:right;margin-bottom:6px"><button type="button" onclick="this.closest('.item').remove();render()" style="cursor:pointer;color:#cf222e;background:none;border:none;font-size:12px;padding:0">✕ ${t('act_delete')}</button></div><div class="grid"><div><label id="exp_company">Company</label><input placeholder="Company"></div><div><label id="exp_title">Title</label><input placeholder="Intern / Research Assistant"></div><div><label id="exp_location">Location</label><input placeholder="City, State"></div><div><label id="exp_period">Period</label><input placeholder="2025.06 - 2025.08"></div></div><div><label id="exp_desc">Responsibilities & Impact</label><textarea placeholder="3–5 concise bullets"></textarea></div>`
+  document.getElementById('expList').appendChild(it)
+  return it
+}
+function addAct(){
+  const it=el('div','item')
+  it.innerHTML=`<div style="text-align:right;margin-bottom:6px"><button type="button" onclick="this.closest('.item').remove();render()" style="cursor:pointer;color:#cf222e;background:none;border:none;font-size:12px;padding:0">✕ ${t('act_delete')}</button></div><div class="grid"><div><label id="act_org">Organization</label><input placeholder="Club / Organization"></div><div><label id="act_role">Role</label><input placeholder="Member / Lead"></div><div><label id="act_location">Location</label><input placeholder="City, State"></div><div><label id="act_period">Period</label><input placeholder="2024 - Present"></div></div><div><label id="act_desc">Contribution</label><textarea placeholder="Activities, competitions, volunteering, impact"></textarea></div>`
+  document.getElementById('actList').appendChild(it)
+  return it
+}
+function val(q){const e=document.querySelector(q);return e?e.value.trim():""}
+function collect(){
+  const data={}
+  data.name=val('#name');data.email=val('#email');data.phone=val('#phone');data.linkedin=val('#linkedin');data.github=val('#github');data.website=val('#website')
+  data.courses=val('#courses')
+  data.languages=val('#languages')
+  data.interests=val('#interests')
+  data.edu=[]
+  document.querySelectorAll('#eduList .item').forEach(it=>{
+    const f=it.querySelectorAll('input')
+    data.edu.push({school:f[0].value,city:f[1].value,degree:f[2].value,major:f[3].value,period:f[4].value,gpa:f[5].value})
+  })
+  data.skills=[]
+  document.querySelectorAll('#skillList .item').forEach(it=>{
+    const f=it.querySelectorAll('input,select')
+    data.skills.push({name:f[0].value,level:f[1].value})
+  })
+  data.projects=[]
+  document.querySelectorAll('#projList .item').forEach(it=>{
+    const f=it.querySelectorAll('input,textarea')
+    data.projects.push({name:f[0].value,title:f[1].value,location:f[2].value,period:f[3].value,stack:f[4].value,link:f[5].value,desc:f[6].value})
+  })
+  data.exps=[]
+  document.querySelectorAll('#expList .item').forEach(it=>{
+    const f=it.querySelectorAll('input,textarea')
+    data.exps.push({company:f[0].value,title:f[1].value,location:f[2].value,period:f[3].value,desc:f[4].value})
+  })
+  data.activities=[]
+  document.querySelectorAll('#actList .item').forEach(it=>{
+    const f=it.querySelectorAll('input,textarea')
+    data.activities.push({org:f[0].value,role:f[1].value,location:f[2].value,period:f[3].value,desc:f[4].value})
+  })
+  return data
+}
+function mdEsc(s){return (s||'').replace(/\|/g,'\\|')}
+function toMd(d){
+  let out=[]
+  out.push(`# ${d.name||''}`)
+  const links=[]
+  if(d.email)links.push(d.email)
+  if(d.phone)links.push(d.phone)
+  if(d.linkedin)links.push(`[LinkedIn](${d.linkedin})`)
+  if(d.github)links.push(`[GitHub](${d.github})`)
+  if(d.website)links.push(`[Website](${d.website})`)
+  out.push(links.join(' · '))
+  out.push(`\n## ${t('s_edu')}`)
+  d.edu.forEach(e=>{
+    out.push(`**${e.school||''}**, ${e.city||''} — ${e.degree||''} · ${e.major||''} (${e.period||''})${e.gpa?` · GPA: ${e.gpa}`:''}`)
+  })
+  if(d.courses){out.push(`**${t('l_courses_preview')}:** ${d.courses}`)}
+  if(d.exps.length){
+    out.push(`\n## ${t('s_exps')}`)
+    d.exps.forEach(e=>{
+      out.push(`### ${e.company}\n**${e.title}** · ${e.location} · ${e.period}\n\n${e.desc.split('\n').map(x=>x.trim()?`- ${x.replace(/^- /,'')}`:'').join('\n')}`)
+    })
+  }
+  if(d.projects.length){
+    out.push(`\n## ${t('s_projects')}`)
+    d.projects.forEach(p=>{
+      out.push(`### ${p.name}\n**${p.title||''}** · ${p.location||''} · ${p.period}\n*Tech Stack:* ${p.stack}${p.link?` · [Link](${p.link})`:''}\n\n${p.desc.split('\n').map(x=>x.trim()?`- ${x.replace(/^- /,'')}`:'').join('\n')}`)
+    })
+  }
+  if(d.skills.length || d.languages || d.interests){
+    out.push(`\n## ${t('s_skills')}`)
+    if(d.skills.length){
+        out.push(`**Skills:** ${d.skills.map(s=>`${s.name} (${s.level})`).join(', ')}`)
+    }
+    if(d.interests){out.push(`**Interests:** ${d.interests}`)}
+    if(d.languages){out.push(`**Languages:** ${d.languages}`)}
+  }
+  if(d.activities.length){
+    out.push(`\n## ${t('s_acts')}`)
+    d.activities.forEach(a=>{
+      out.push(`### ${a.org}\n**${a.role}** · ${a.period} · ${a.location}\n\n${a.desc.split('\n').map(x=>x.trim()?`- ${x.replace(/^- /,'')}`:'').join('\n')}`)
+    })
+  }
+  return out.join('\n\n')
+}
+function render(){
+  const d=collect()
+  const root=document.getElementById('resume')
+  root.innerHTML=''
+  
+  // Header
+  const title=el('h1'); title.textContent=d.name||'YOUR NAME'
+  root.appendChild(title)
+  
+  const info=el('div','contact-info')
+  const arr=[]
+  if(d.phone)arr.push(d.phone)
+  if(d.email)arr.push(d.email)
+  if(d.linkedin)arr.push(d.linkedin)
+  if(d.github)arr.push(d.github)
+  if(d.website)arr.push(d.website)
+  info.textContent=arr.join(' | ')
+  root.appendChild(info)
+
+  // Helper for sections
+  const addSec=(title)=> {const h=el('h3'); h.textContent=title; root.appendChild(h)}
+  const addRow=(l,r,bold=false,italic=false)=>{
+    const row=el('div','resume-row')
+    if(bold) row.classList.add('resume-bold')
+    if(italic) row.classList.add('resume-italic')
+    const left=el('span'); left.textContent=l; row.appendChild(left)
+    const right=el('span'); right.textContent=r; row.appendChild(right)
+    root.appendChild(row)
+  }
+
+  // Education
+  if(d.edu.length){
+    addSec(t('s_edu'))
+    d.edu.forEach(e=>{
+      // Line 1: School - Location
+      addRow(e.school||'', e.city||'', true, false)
+      // Line 2: Degree/Major - Period
+      const deg = [e.degree, e.major].filter(Boolean).join(', ')
+      addRow(deg, e.period||'', false, true)
+      // GPA
+      if(e.gpa){
+        const g=el('div','resume-sub'); g.textContent=`GPA: ${e.gpa}`; root.appendChild(g)
+      }
+    })
+    // Courses
+    if(d.courses){
+       const c=el('div','resume-sub'); c.style.marginTop='2px'
+       c.innerHTML = `<strong>${t('l_courses_preview')}:</strong> ${d.courses}`
+       root.appendChild(c)
+    }
+  }
+
+  // Experience
+  if(d.exps.length){
+    addSec(t('s_exps'))
+    d.exps.forEach(e=>{
+      // Line 1: Company - Location
+      addRow(e.company||'', e.location||'', true, false)
+      // Line 2: Title - Period
+      addRow(e.title||'', e.period||'', false, true)
+      // Bullets
+      if(e.desc){
+        const ul=el('ul')
+        e.desc.split('\n').forEach(line=>{
+            if(line.trim()){
+                const li=el('li'); li.textContent=line.replace(/^- /,''); ul.appendChild(li)
+            }
+        })
+        root.appendChild(ul)
+      }
+    })
+  }
+
+  // Projects
+  if(d.projects.length){
+    addSec(t('s_projects'))
+    d.projects.forEach(p=>{
+      // Line 1: Name - Location
+      addRow(p.name||'', p.location||'', true, false)
+      // Line 2: Title - Period
+      addRow(p.title||'', p.period||'', false, true)
+      
+      // Line 3: Stack | Link
+      let sub = p.stack||''
+      if(p.link) sub += (sub ? ` | ${p.link}` : p.link)
+      if(sub){
+        const row=el('div','resume-row')
+        const left=el('span'); left.innerHTML=`<em>${sub}</em>`; row.appendChild(left)
+        root.appendChild(row)
+      }
+      
+      if(p.desc){
+        const ul=el('ul')
+        p.desc.split('\n').forEach(line=>{
+            if(line.trim()){
+                const li=el('li'); li.textContent=line.replace(/^- /,''); ul.appendChild(li)
+            }
+        })
+        root.appendChild(ul)
+      }
+    })
+  }
+  
+  // Activities
+  if(d.activities.length){
+    addSec(t('s_acts'))
+    d.activities.forEach(a=>{
+      addRow(a.org||'', a.location||'', true, false)
+      addRow(a.role||'', a.period||'', false, true)
+      if(a.desc){
+        const ul=el('ul')
+        a.desc.split('\n').forEach(line=>{
+            if(line.trim()){
+                const li=el('li'); li.textContent=line.replace(/^- /,''); ul.appendChild(li)
+            }
+        })
+        root.appendChild(ul)
+      }
+    })
+  }
+
+  // Skills & Interests
+  if(d.skills.length || d.languages || d.interests){
+    addSec(t('s_skills'))
+    const skillDiv = el('div','resume-sub')
+    // Group skills
+    if(d.skills.length){
+        const sList = d.skills.map(s=>s.name).join(', ')
+        const row = el('div'); row.innerHTML=`<strong>Skills:</strong> ${sList}`; skillDiv.appendChild(row)
+    }
+    if(d.interests){
+        const row = el('div'); row.innerHTML=`<strong>Interests:</strong> ${d.interests}`; skillDiv.appendChild(row)
+    }
+    if(d.languages){
+        const row = el('div'); row.innerHTML=`<strong>Languages:</strong> ${d.languages}`; skillDiv.appendChild(row)
+    }
+    root.appendChild(skillDiv)
+  }
+}
+function download(){
+  const md=toMd(collect())
+  const blob=new Blob([md],{type:'text/markdown;charset=utf-8'})
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(blob)
+  a.download='My_Resume_Draft.md'
+  document.body.appendChild(a);a.click();a.remove()
+}
+function copyMd(){
+  const md=toMd(collect())
+  navigator.clipboard.writeText(md)
+}
+function toTxt(d){
+  const lines=[]
+  // Header
+  lines.push((d.name||'').toUpperCase())
+  const contact=[]
+  if(d.phone) contact.push(d.phone)
+  if(d.email) contact.push(d.email)
+  if(d.linkedin) contact.push(d.linkedin)
+  if(d.github) contact.push(d.github)
+  if(d.website) contact.push(d.website)
+  lines.push(contact.join(' | '))
+  lines.push('')
+
+  // Education
+  if(d.edu.length){
+    lines.push(t('s_edu').toUpperCase())
+    lines.push('-'.repeat(t('s_edu').length))
+    d.edu.forEach(e=>{
+      lines.push(`${e.school||''}, ${e.city||''}`)
+      lines.push(`${e.degree||''} in ${e.major||''} (${e.period||''})${e.gpa?` | GPA: ${e.gpa}`:''}`)
+    })
+    if(d.courses){
+      lines.push(`${t('l_courses_preview')}: ${d.courses}`)
+    }
+    lines.push('')
+  }
+
+  // Experience
+  if(d.exps.length){
+    lines.push(t('s_exps').toUpperCase())
+    lines.push('-'.repeat(t('s_exps').length))
+    d.exps.forEach(e=>{
+      lines.push(`${e.company||''} | ${e.location||''}`)
+      lines.push(`${e.title||''} (${e.period||''})`)
+      if(e.desc){
+        e.desc.split('\n').forEach(x=>{
+          if(x.trim()) lines.push(`  * ${x.replace(/^- /,'')}`)
+        })
+      }
+      lines.push('')
+    })
+  }
+
+  // Projects
+  if(d.projects.length){
+    lines.push(t('s_projects').toUpperCase())
+    lines.push('-'.repeat(t('s_projects').length))
+    d.projects.forEach(p=>{
+      lines.push(`${p.name||''} | ${p.location||''}`)
+      lines.push(`${p.title||''} (${p.period||''})`)
+      let meta = []
+      if(p.stack) meta.push(p.stack)
+      if(p.link) meta.push(p.link)
+      if(meta.length) lines.push(meta.join(' | '))
+      if(p.desc){
+        p.desc.split('\n').forEach(x=>{
+          if(x.trim()) lines.push(`  * ${x.replace(/^- /,'')}`)
+        })
+      }
+      lines.push('')
+    })
+  }
+
+  // Skills
+  if(d.skills.length || d.languages || d.interests){
+    lines.push(t('s_skills').toUpperCase())
+    lines.push('-'.repeat(t('s_skills').length))
+    if(d.skills.length){
+      const sList = d.skills.map(s=>`${s.name} (${s.level})`).join(', ')
+      lines.push(`Skills: ${sList}`)
+    }
+    if(d.interests){
+      lines.push(`Interests: ${d.interests}`)
+    }
+    if(d.languages){
+      lines.push(`Languages: ${d.languages}`)
+    }
+    lines.push('')
+  }
+
+  // Activities
+  if(d.activities.length){
+    lines.push(t('s_acts').toUpperCase())
+    lines.push('-'.repeat(t('s_acts').length))
+    d.activities.forEach(a=>{
+      lines.push(`${a.org||''} | ${a.location||''}`)
+      lines.push(`${a.role||''} (${a.period||''})`)
+      if(a.desc){
+        a.desc.split('\n').forEach(x=>{
+          if(x.trim()) lines.push(`  * ${x.replace(/^- /,'')}`)
+        })
+      }
+      lines.push('')
+    })
+  }
+
+  return lines.join('\n')
+}
+function downloadTxt(){
+  const txt=toTxt(collect())
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}))
+  a.download='My_Resume.txt'
+  document.body.appendChild(a);a.click();a.remove()
+}
+function applyLang(){
+  document.getElementById('h_fill').innerText=t('h_fill')
+  document.getElementById('ui_lang_label').innerText=t('ui_lang_label')
+  document.getElementById('l_name').innerText=t('l_name')
+  document.getElementById('l_email').innerText=t('l_email')
+  document.getElementById('l_phone').innerText=t('l_phone')
+  document.getElementById('l_site').innerText=t('l_site')
+  /* Summary removed per user request */
+  document.getElementById('h_edu').innerText=t('h_edu')
+  document.getElementById('b_add_edu').innerText=t('b_add_edu')
+  document.getElementById('l_courses').innerText=t('l_courses')
+  document.getElementById('h_skills').innerText=t('h_skills')
+  document.getElementById('b_add_skill').innerText=t('b_add_skill')
+  document.getElementById('h_projects').innerText=t('h_projects')
+  document.getElementById('b_add_proj').innerText=t('b_add_proj')
+  document.getElementById('h_exps').innerText=t('h_exps')
+  document.getElementById('b_add_exp').innerText=t('b_add_exp')
+  document.getElementById('h_acts').innerText=t('h_acts')
+  document.getElementById('b_add_act').innerText=t('b_add_act')
+  document.getElementById('b_preview').innerText=t('b_preview')
+  document.getElementById('b_save').innerText=t('b_save')
+  // Export dropdown items
+  document.getElementById('b_md').innerText=t('b_md')
+  document.getElementById('b_copy').innerText=t('b_copy')
+  document.getElementById('b_txt').innerText=t('b_txt')
+  document.getElementById('b_pdf').innerText=t('b_pdf')
+
+  document.getElementById('h_preview').innerText=t('h_preview')
+  document.getElementById('l_languages').innerText=(document.getElementById('lang').value==='zh'?'语言':document.getElementById('lang').value==='bi'?'Languages / 语言':'Languages')
+  document.getElementById('h_history_drawer').innerText=t('h_history')
+  document.getElementById('l_interests').innerText=(document.getElementById('lang').value==='zh'?'兴趣':document.getElementById('lang').value==='bi'?'Interests / 兴趣':'Interests')
+
+  document.getElementById('h_skills').innerText=t('h_skills')
+  document.getElementById('h_history_drawer').innerText=t('h_history')
+}
+function toggleDrawer(){
+  const d = document.getElementById('historyDrawer')
+  const o = document.getElementById('drawerOverlay')
+  d.classList.toggle('open')
+  o.classList.toggle('open')
+}
+applyLang()
+// Versioning using localStorage
+function loadVersions(){
+  try{ return JSON.parse(localStorage.getItem('resume_versions')||'[]') }catch(e){ return [] }
+}
+function saveVersions(arr){
+  localStorage.setItem('resume_versions', JSON.stringify(arr))
+}
+function formatDate(ts){
+  const d=new Date(ts);const pad=n=>String(n).padStart(2,'0')
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+function saveVersionPrompt(){
+  const defName = `${(val('#name')||'Resume')} ${formatDate(Date.now())}`
+  const name = prompt('Version name:', defName) || defName
+  const v = loadVersions()
+  v.unshift({id: Date.now(), name, lang: document.getElementById('lang').value, data: collect(), createdAt: Date.now()})
+  saveVersions(v)
+  renderHistory()
+}
+
+// Auto-Preview
+document.querySelector('.wrap').addEventListener('input', (e) => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT'){
+    render()
+  }
+})
+document.querySelector('.wrap').addEventListener('change', (e) => {
+   if(e.target.tagName === 'SELECT'){
+     render()
+   }
+})
+
+function renderHistory(){
+  const list = document.getElementById('historyList'); list.innerHTML=''
+  const v = loadVersions()
+  if(v.length===0){ const p=document.createElement('div'); p.className='muted'; p.textContent='No saved versions'; list.appendChild(p); return }
+  v.forEach(item=>{
+    const div=document.createElement('div'); div.className='item'
+    const title=document.createElement('div'); title.style.fontWeight='600'; title.textContent=item.name
+    const meta=document.createElement('div'); meta.className='muted'; meta.textContent=`${formatDate(item.createdAt)} · ${item.lang}`
+    const actions=document.createElement('div'); actions.className='item-actions'
+    const bLoad=document.createElement('button'); bLoad.className='btn'; bLoad.textContent=t('act_load'); bLoad.onclick=()=>loadVersion(item)
+    const bExport=document.createElement('button'); bExport.className='btn'; bExport.textContent=t('act_export'); bExport.onclick=()=>exportVersion(item)
+    const bDelete=document.createElement('button'); bDelete.className='btn'; bDelete.textContent=t('act_delete'); bDelete.onclick=()=>deleteVersion(item.id)
+    actions.appendChild(bLoad); actions.appendChild(bExport); actions.appendChild(bDelete)
+    div.appendChild(title); div.appendChild(meta); div.appendChild(actions)
+    list.appendChild(div)
+  })
+}
+function setFormFromData(d){
+  // Top level
+  const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val }
+  safeSet('name', d.name||'')
+  safeSet('email', d.email||'')
+  safeSet('phone', d.phone||'')
+  safeSet('linkedin', d.linkedin||'')
+  safeSet('github', d.github||'')
+  safeSet('website', d.website||'')
+  // Removed obsolete fields (summary, visa, start, locationPref, links)
+  safeSet('courses', d.courses||'')
+  safeSet('languages', d.languages||'')
+  safeSet('interests', d.interests||'')
+  // Lists
+  const fillList=(listId, arr, builder)=>{
+    const root=document.getElementById(listId); 
+    if(!root) return;
+    root.innerHTML=''
+    if(!Array.isArray(arr)) return;
+    arr.forEach(x=>{
+      try { builder(x) } catch(e){ console.error(e) }
+    })
+  }
+  fillList('eduList', d.edu, e=>{ 
+    if(!e) return;
+    const it=addEdu(); 
+    const f=it.querySelectorAll('input'); 
+    if(f.length<6) return;
+    f[0].value=e.school||''; f[1].value=e.city||''; f[2].value=e.degree||''; f[3].value=e.major||''; f[4].value=e.period||''; f[5].value=e.gpa||'' 
+  })
+  fillList('skillList', d.skills, s=>{ 
+    if(!s) return;
+    const it=addSkill(); 
+    const f=it.querySelectorAll('input,select'); 
+    if(f.length<2) return;
+    f[0].value=s.name||''; f[1].value=s.level||'Intermediate' 
+  })
+  fillList('projList', d.projects, p=>{ 
+    if(!p) return;
+    const it=addProj(); 
+    const f=it.querySelectorAll('input,textarea'); 
+    if(f.length<7) return;
+    f[0].value=p.name||''; f[1].value=p.title||''; f[2].value=p.location||''; f[3].value=p.period||''; f[4].value=p.stack||''; f[5].value=p.link||''; f[6].value=p.desc||'' 
+  })
+  fillList('expList', d.exps, e=>{ 
+    if(!e) return;
+    const it=addExp(); 
+    const f=it.querySelectorAll('input,textarea'); 
+    if(f.length<5) return;
+    f[0].value=e.company||''; f[1].value=e.title||''; f[2].value=e.location||''; f[3].value=e.period||''; f[4].value=e.desc||'' 
+  })
+  fillList('actList', d.activities, a=>{ 
+    if(!a) return;
+    const it=addAct(); 
+    const f=it.querySelectorAll('input,textarea'); 
+    if(f.length<5) return;
+    f[0].value=a.org||''; f[1].value=a.role||''; f[2].value=a.location||''; f[3].value=a.period||''; f[4].value=a.desc||'' 
+  })
+}
+function loadVersion(item){
+  try {
+    document.getElementById('lang').value=item.lang||'en'
+    applyLang()
+    setFormFromData(item.data||{})
+    // Force a short delay to ensure DOM is ready then render
+    setTimeout(render, 50)
+  } catch(e) {
+    alert('Error loading version: ' + e.message)
+    console.error(e)
+  }
+}
+function exportVersion(item){
+  const json=JSON.stringify(item,null,2)
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}))
+  a.download=`${(item.name||'resume')}.json`
+  document.body.appendChild(a);a.click();a.remove()
+}
+function deleteVersion(id){
+  const v=loadVersions().filter(x=>x.id!==id)
+  saveVersions(v)
+  renderHistory()
+}
+// initialize history on load
+renderHistory()
+</script>
+</body>
+</html>
