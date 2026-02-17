@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+    if (localStorage.getItem('usjobsearch_auth_v1') !== 'true') {
+        window.location.href = 'index.html';
+    }
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Job Match & Tailor</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.6; background: #f6f8fa; color: #24292f; margin: 0; }
+  .header { background: #fff; border-bottom: 1px solid #d0d7de; padding: 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-weight: bold; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; border: 1px solid #d0d7de; background: #f6f8fa; color: #24292f; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: #f3f4f6; }
+  .btn.primary { background: #0969da; color: #fff; border-color: #0969da; }
+  .btn.primary:hover { background: #0860ca; }
+  
+  .container { max-width: 1400px; margin: 0 auto; display: flex; height: calc(100vh - 65px); }
+  
+  /* Sidebar - Job Feed */
+  .sidebar { width: 350px; background: #fff; border-right: 1px solid #d0d7de; display: flex; flex-direction: column; }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid #d0d7de; background: #f6f8fa; }
+  .job-list { overflow-y: auto; flex: 1; }
+  .job-item { padding: 16px; border-bottom: 1px solid #eaeef2; cursor: pointer; transition: background 0.2s; }
+  .job-item:hover { background: #f6f8fa; }
+  .job-item.active { background: #e6f7ff; border-left: 3px solid #0969da; }
+  .job-title { font-weight: 600; font-size: 15px; color: #0969da; margin-bottom: 4px; }
+  .job-company { font-size: 13px; color: #57606a; display: flex; justify-content: space-between; }
+  .job-match-score { font-size: 12px; font-weight: bold; color: #1a7f37; background: #dafbe1; padding: 2px 6px; border-radius: 10px; }
+  
+  /* Main Content - Analysis */
+  .main { flex: 1; display: flex; flex-direction: column; background: #fff; }
+  .main-header { padding: 16px 24px; border-bottom: 1px solid #d0d7de; background: #fff; display: flex; justify-content: space-between; align-items: center; }
+  .workspace { flex: 1; display: flex; overflow: hidden; }
+  
+  .panel { flex: 1; padding: 24px; overflow-y: auto; border-right: 1px solid #eaeef2; }
+  .panel:last-child { border-right: none; }
+  
+  .analysis-card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .analysis-title { font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+  
+  .keyword-tag { display: inline-block; padding: 4px 8px; font-size: 12px; border-radius: 4px; margin: 0 4px 4px 0; border: 1px solid transparent; }
+  .keyword-missing { background: #ffebe9; color: #cf222e; border-color: #ff818266; }
+  .keyword-match { background: #dafbe1; color: #1a7f37; border-color: #4ac26b66; }
+  
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid #d0d7de; margin-bottom: 16px; }
+  .tab { padding: 8px 16px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; font-size: 14px; color: #57606a; }
+  .tab.active { background: #fff; border-color: #d0d7de; border-bottom-color: #fff; font-weight: 600; color: #24292f; margin-bottom: -1px; }
+  
+  .resume-preview { font-family: "Times New Roman", serif; padding: 40px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; min-height: 800px; font-size: 14px; line-height: 1.4; }
+  .resume-preview h1 { font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 4px; }
+  .resume-preview .contact { text-align: center; font-size: 12px; margin-bottom: 20px; }
+  .resume-preview h3 { border-bottom: 1px solid #000; font-size: 14px; text-transform: uppercase; margin: 16px 0 8px; padding-bottom: 2px; }
+  .resume-preview .item { margin-bottom: 8px; }
+  .resume-preview .row { display: flex; justify-content: space-between; font-weight: bold; }
+  .resume-preview .sub { font-style: italic; font-size: 13px; }
+  .resume-preview ul { margin: 4px 0 0 20px; padding: 0; }
+  .resume-preview li { margin-bottom: 2px; }
+  
+  .highlight-new { background-color: #fff8c5; }
+  
+  /* Loading Overlay */
+  .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); z-index: 200; display: none; align-items: center; justify-content: center; flex-direction: column; }
+  .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0969da; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 16px; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  
+  .empty-state { text-align: center; padding: 40px; color: #57606a; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <span>🤖</span> AI Job Match & Tailor
+  </div>
+  <div style="display:flex; gap:12px; align-items:center">
+    <select id="resumeSelector" class="btn" style="min-width: 200px;" onchange="loadSelectedResume()">
+      <option value="">Select Resume Version...</option>
+    </select>
+    <a href="index.html" class="btn">🏠 Home</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Sidebar: Job Feed -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div style="font-weight:600; margin-bottom:8px">Daily Top 10 Matches</div>
+      <div style="font-size:12px; color:#57606a">Based on your profile • <span id="todayDate"></span></div>
+    </div>
+    <div id="jobList" class="job-list">
+      <!-- Jobs will be injected here -->
+    </div>
+  </div>
+  
+  <!-- Main: Analysis & Tailoring -->
+  <div class="main">
+    <div class="main-header">
+      <div id="activeJobTitle" style="font-weight:bold; font-size:18px">Select a job to analyze</div>
+      <button class="btn primary" onclick="runTailoring()" id="tailorBtn" disabled>✨ Auto-Tailor Resume</button>
+    </div>
+    
+    <div class="workspace" id="workspace" style="display:none">
+      <!-- Left Panel: Analysis -->
+      <div class="panel" style="flex: 0.8; background: #f6f8fa;">
+        <div class="analysis-card">
+          <div class="analysis-title">📊 Match Score</div>
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px">
+            <div style="font-size:32px; font-weight:bold; color:#0969da" id="scoreValue">0%</div>
+            <div style="flex:1; height:8px; background:#d0d7de; border-radius:4px; overflow:hidden">
+              <div id="scoreBar" style="width:0%; height:100%; background:#0969da; transition: width 1s ease"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analysis-card">
+          <div class="analysis-title">🔑 Keywords Analysis</div>
+          <div style="font-size:13px; color:#57606a; margin-bottom:8px">Missing High-Value Keywords:</div>
+          <div id="missingKeywords"></div>
+          <div style="font-size:13px; color:#57606a; margin:12px 0 8px">Matched Keywords:</div>
+          <div id="matchedKeywords"></div>
+        </div>
+
+        <div class="analysis-card">
+           <div class="analysis-title">📝 Job Description</div>
+           <div id="jobDesc" style="font-size:13px; white-space: pre-wrap; color: #24292f; max-height: 300px; overflow-y:auto"></div>
+        </div>
+      </div>
+      
+      <!-- Right Panel: Output -->
+      <div class="panel" style="flex: 1.2; padding: 0;">
+        <div style="padding: 16px; border-bottom: 1px solid #d0d7de; background: #fff;">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab('resume')" id="tabResume">📄 Tailored Resume</div>
+            <div class="tab" onclick="switchTab('coverletter')" id="tabCover">✉️ Cover Letter</div>
+          </div>
+        </div>
+        
+        <div id="viewResume" style="padding: 24px; background: #eef2f5; height: calc(100% - 60px); overflow-y: auto;">
+          <div id="tailoredResumePreview" class="resume-preview"></div>
+        </div>
+        
+        <div id="viewCover" style="padding: 24px; background: #eef2f5; height: calc(100% - 60px); overflow-y: auto; display:none">
+          <div id="coverLetterPreview" class="resume-preview" style="white-space: pre-wrap;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="emptyState" class="empty-state">
+      <h3>👈 Select a job from the list to start</h3>
+      <p>AI will analyze the job description and optimize your resume keywords.</p>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <h3 id="loadingText">Analyzing...</h3>
+  <div style="color:#57606a; font-size:14px; margin-top:8px" id="loadingSub">Extracting keywords</div>
+</div>
+
+<script>
+// --- Data & State ---
+let currentResume = null;
+let currentJob = null;
+const MOCK_JOBS = [
+  {
+    id: 1,
+    title: "Software Engineer Intern",
+    company: "Google",
+    location: "Mountain View, CA",
+    desc: "Qualifications:\n• Experience with Python, C++, or Java.\n• Knowledge of Data Structures and Algorithms.\n• Experience with Mobile App Development (iOS/Android) is a plus.\n• Currently pursuing a BS in Computer Science or related field.\n\nResponsibilities:\n• Design and implement software solutions.\n• Collaborate with cross-functional teams to define features.",
+    keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App", "iOS", "Android", "Computer Science"]
+  },
+  {
+    id: 2,
+    title: "Data Analyst (New Grad)",
+    company: "Meta",
+    location: "Menlo Park, CA",
+    desc: "We are looking for a Data Analyst to join our Analytics team.\n\nRequirements:\n• Strong proficiency in SQL and Python.\n• Experience with data visualization tools (Tableau, PowerBI).\n• Ability to communicate complex data insights.\n• Degree in Statistics, Math, Engineering or related.\n• Knowledge of A/B testing.",
+    keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization", "Statistics", "A/B Testing", "Communication"]
+  },
+  {
+    id: 3,
+    title: "Bioinformatics Associate",
+    company: "Genentech",
+    location: "South San Francisco, CA",
+    desc: "Join our Research team to analyze genomic data.\n\nSkills:\n• Proficiency in Python or R.\n• Experience with NGS data analysis.\n• Background in Biology, Genetics, or Bioengineering.\n• Familiarity with Linux/Unix environment.\n• Strong problem-solving skills.",
+    keywords: ["Python", "R", "NGS", "Genomics", "Biology", "Bioengineering", "Linux", "Unix", "Research"]
+  },
+  {
+    id: 4,
+    title: "AgTech Software Developer",
+    company: "John Deere",
+    location: "Austin, TX",
+    desc: "Building the future of autonomous farming.\n\nMust Haves:\n• Experience with Embedded Systems or IoT.\n• Proficiency in C++ or Python.\n• Understanding of Agricultural Engineering principles.\n• Experience with GPS/GIS data.\n• Collaborative mindset.",
+    keywords: ["Embedded Systems", "IoT", "C++", "Python", "Agriculture", "GPS", "GIS", "Engineering"]
+  },
+  {
+    id: 5,
+    title: "Product Manager Intern",
+    company: "Microsoft",
+    location: "Redmond, WA",
+    desc: "Define the future of productivity.\n\nLooking for:\n• Strong analytical and communication skills.\n• Experience leading projects or clubs.\n• Understanding of software development lifecycle (SDLC).\n• Passion for technology and user experience.\n• Currently enrolled in a Bachelor's program.",
+    keywords: ["Product Management", "Communication", "Leadership", "SDLC", "User Experience", "Analytical Skills", "Technology"]
+  },
+  {
+    id: 6,
+    title: "Machine Learning Engineer",
+    company: "OpenAI",
+    location: "San Francisco, CA",
+    desc: "Help us build safe AGI.\n\nRequirements:\n• Deep understanding of Deep Learning (PyTorch/TensorFlow).\n• Strong software engineering skills (Python).\n• Experience with large language models (LLMs).\n• Research experience in AI/ML.\n• Ability to work in a fast-paced environment.",
+    keywords: ["Deep Learning", "PyTorch", "TensorFlow", "Python", "LLM", "Machine Learning", "Research", "AI"]
+  },
+  {
+    id: 7,
+    title: "Frontend Engineer",
+    company: "Airbnb",
+    location: "Remote",
+    desc: "Create beautiful user interfaces.\n\nSkills:\n• Expert in JavaScript/TypeScript, React, and HTML/CSS.\n• Experience with modern web frameworks.\n• Understanding of web performance and accessibility.\n• Eye for design and detail.\n• Experience with GraphQL is a plus.",
+    keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS", "Web Performance", "Accessibility", "GraphQL", "Design"]
+  },
+  {
+    id: 8,
+    title: "Research Assistant (Robotics)",
+    company: "Tesla",
+    location: "Palo Alto, CA",
+    desc: "Work on the Tesla Bot.\n\nQualifications:\n• Experience with ROS (Robot Operating System).\n• Strong C++ and Python skills.\n• Background in Mechanical or Electrical Engineering.\n• Experience with control systems and sensors.\n• Hands-on prototyping experience.",
+    keywords: ["ROS", "C++", "Python", "Robotics", "Mechanical Engineering", "Control Systems", "Sensors", "Prototyping"]
+  },
+  {
+    id: 9,
+    title: "Quantitative Researcher",
+    company: "Citadel",
+    location: "New York, NY",
+    desc: "Apply math to financial markets.\n\nRequirements:\n• Advanced degree in Math, Physics, or CS.\n• Strong programming skills in C++ or Python.\n• Knowledge of probability and statistics.\n• Experience with large datasets.\n• Competitive programming experience is a plus.",
+    keywords: ["Math", "Physics", "C++", "Python", "Statistics", "Probability", "Data Analysis", "Finance"]
+  },
+  {
+    id: 10,
+    title: "Full Stack Developer",
+    company: "Stripe",
+    location: "Seattle, WA",
+    desc: "Build the economic infrastructure of the internet.\n\nLooking for:\n• Experience with Ruby, Java, or Go.\n• Experience with React or modern frontend frameworks.\n• Strong understanding of APIs and database design.\n• Ability to write high-quality, maintainable code.\n• User-centric mindset.",
+    keywords: ["Ruby", "Java", "Go", "React", "API", "Database", "Full Stack", "Web Development"]
+  }
+];
+
+// --- Initialization ---
+document.getElementById('todayDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+loadResumeVersions();
+renderJobs();
+
+// --- Functions ---
+function loadResumeVersions() {
+  try {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    const sel = document.getElementById('resumeSelector');
+    if (versions.length === 0) {
+      const opt = document.createElement('option');
+      opt.text = "No resumes found. Create one in Builder!";
+      sel.add(opt);
+      sel.disabled = true;
+      return;
+    }
+    versions.forEach((v, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.text = `${v.name} (${new Date(v.createdAt).toLocaleDateString()})`;
+      sel.add(opt);
+    });
+    // Select first one by default
+    sel.selectedIndex = 1; 
+    loadSelectedResume();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function loadSelectedResume() {
+  const idx = document.getElementById('resumeSelector').value;
+  if (idx === "") return;
+  const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+  currentResume = versions[idx].data;
+  // Reset view
+  document.getElementById('workspace').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('tailorBtn').disabled = true;
+  // Clear active job
+  document.querySelectorAll('.job-item').forEach(el => el.classList.remove('active'));
+}
+
+function renderJobs() {
+  const list = document.getElementById('jobList');
+  list.innerHTML = '';
+  MOCK_JOBS.forEach(job => {
+    const div = document.createElement('div');
+    div.className = 'job-item';
+    div.onclick = () => selectJob(job, div);
+    div.innerHTML = `
+      <div class="job-title">${job.title}</div>
+      <div class="job-company">
+        <span>${job.company}</span>
+        <span>${job.location}</span>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function selectJob(job, el) {
+  currentJob = job;
+  // UI Update
+  document.querySelectorAll('.job-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('workspace').style.display = 'flex';
+  document.getElementById('activeJobTitle').innerText = `${job.title} @ ${job.company}`;
+  document.getElementById('tailorBtn').disabled = false;
+  document.getElementById('jobDesc').innerText = job.desc;
+  
+  // Reset Output
+  document.getElementById('viewResume').style.display = 'block';
+  document.getElementById('viewCover').style.display = 'none';
+  document.getElementById('tabResume').classList.add('active');
+  document.getElementById('tabCover').classList.remove('active');
+  document.getElementById('tailoredResumePreview').innerHTML = '<div style="color:#57606a;text-align:center;margin-top:40px">Click "Auto-Tailor Resume" to generate optimized version.</div>';
+  
+  analyzeMatch();
+}
+
+function analyzeMatch() {
+  if (!currentResume || !currentJob) return;
+  
+  // Simple Keyword Matching Logic
+  const resumeText = JSON.stringify(currentResume).toLowerCase();
+  const jobKeywords = currentJob.keywords;
+  
+  const matched = [];
+  const missing = [];
+  
+  jobKeywords.forEach(k => {
+    if (resumeText.includes(k.toLowerCase())) {
+      matched.push(k);
+    } else {
+      missing.push(k);
+    }
+  });
+  
+  // Calculate Score
+  const score = Math.round((matched.length / jobKeywords.length) * 100);
+  
+  // Update UI
+  document.getElementById('scoreValue').innerText = score + '%';
+  document.getElementById('scoreBar').style.width = score + '%';
+  document.getElementById('scoreBar').style.background = score > 70 ? '#1a7f37' : (score > 40 ? '#d29922' : '#cf222e');
+  
+  const renderTags = (arr, type, containerId) => {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    if (arr.length === 0) {
+      c.innerHTML = '<span style="font-size:12px;color:#57606a">None</span>';
+      return;
+    }
+    arr.forEach(k => {
+      const span = document.createElement('span');
+      span.className = `keyword-tag keyword-${type}`;
+      span.innerText = k;
+      c.appendChild(span);
+    });
+  };
+  
+  renderTags(missing, 'missing', 'missingKeywords');
+  renderTags(matched, 'match', 'matchedKeywords');
+}
+
+async function runTailoring() {
+  const overlay = document.getElementById('loadingOverlay');
+  const txt = document.getElementById('loadingText');
+  const sub = document.getElementById('loadingSub');
+  
+  overlay.style.display = 'flex';
+  
+  // Simulation Steps
+  txt.innerText = 'Analyzing Job Requirements...';
+  await new Promise(r => setTimeout(r, 1000));
+  
+  txt.innerText = 'Optimizing Resume Structure...';
+  sub.innerText = 'Injecting missing keywords: ' + document.getElementById('missingKeywords').innerText;
+  await new Promise(r => setTimeout(r, 1200));
+  
+  txt.innerText = 'Drafting Cover Letter...';
+  sub.innerText = 'Personalizing for ' + currentJob.company;
+  await new Promise(r => setTimeout(r, 1000));
+  
+  overlay.style.display = 'none';
+  
+  generateTailoredResume();
+  generateCoverLetter();
+}
+
+function generateTailoredResume() {
+  // Deep copy resume
+  const d = JSON.parse(JSON.stringify(currentResume));
+  const missing = [];
+  currentJob.keywords.forEach(k => {
+     if (!JSON.stringify(d).toLowerCase().includes(k.toLowerCase())) missing.push(k);
+  });
+  
+  // Inject keywords into Skills (Mock Tailoring)
+  if (missing.length > 0) {
+     d.skills.unshift({ name: "Targeted Skills (" + currentJob.company + ")", level: missing.join(', ') });
+  }
+  
+  // Render Resume (Reusing logic from resume_form.html, simplified here)
+  const root = document.getElementById('tailoredResumePreview');
+  root.innerHTML = '';
+  
+  const h1 = document.createElement('h1'); h1.innerText = d.name; root.appendChild(h1);
+  const info = document.createElement('div'); info.className = 'contact'; 
+  info.innerText = [d.email, d.phone, d.linkedin].filter(Boolean).join(' | '); root.appendChild(info);
+  
+  const addSec = (t) => { const h = document.createElement('h3'); h.innerText = t; root.appendChild(h); };
+  const addRow = (l, r) => { 
+     const row = document.createElement('div'); row.className='row';
+     row.innerHTML = `<span>${l}</span><span>${r}</span>`;
+     root.appendChild(row);
+  };
+  
+  // Education
+  if(d.edu.length) { addSec('EDUCATION'); d.edu.forEach(e => addRow(`${e.school}, ${e.city}`, `${e.degree}, ${e.period}`)); }
+  
+  // Experience
+  if(d.exps.length) { 
+    addSec('PROFESSIONAL EXPERIENCE'); 
+    d.exps.forEach(e => {
+        addRow(`${e.company} - ${e.title}`, e.period);
+        const ul = document.createElement('ul');
+        e.desc.split('\n').forEach(li => { if(li.trim()) ul.innerHTML += `<li>${li.replace(/^- /, '')}</li>`; });
+        root.appendChild(ul);
+    });
+  }
+  
+  // Projects (Inject Keywords into first project description for demo)
+  if(d.projects.length) {
+    addSec('PROJECTS');
+    d.projects.forEach((p, i) => {
+        addRow(p.name, p.period);
+        const ul = document.createElement('ul');
+        let desc = p.desc;
+        // Mock injection
+        if (i === 0 && missing.length > 0) {
+            desc += `\n- Optimized project using ${missing.slice(0, 3).join(', ')} to enhance performance.`;
+        }
+        desc.split('\n').forEach(li => { 
+            if(li.trim()) {
+                // Highlight injected line
+                const isNew = li.includes('Optimized project using');
+                ul.innerHTML += `<li class="${isNew ? 'highlight-new' : ''}">${li.replace(/^- /, '')}</li>`; 
+            }
+        });
+        root.appendChild(ul);
+    });
+  }
+  
+  // Skills
+  if(d.skills.length) {
+      addSec('SKILLS');
+      const div = document.createElement('div');
+      d.skills.forEach(s => {
+          const isNew = s.name.startsWith('Targeted');
+          div.innerHTML += `<div class="${isNew ? 'highlight-new' : ''}"><b>${s.name}:</b> ${s.level}</div>`;
+      });
+      root.appendChild(div);
+  }
+}
+
+function generateCoverLetter() {
+  const d = currentResume;
+  const j = currentJob;
+  const today = new Date().toLocaleDateString();
+  
+  const text = `
+${d.name}
+${d.email} | ${d.phone}
+
+${today}
+
+Hiring Manager
+${j.company}
+${j.location}
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the ${j.title} position at ${j.company}, as advertised. With my background in ${d.edu[0]?.major || 'Engineering'} from ${d.edu[0]?.school || 'University'}, and my hands-on experience in ${d.skills[0]?.name || 'Technology'}, I am confident in my ability to contribute effectively to your team.
+
+I have long admired ${j.company}'s work in the industry, particularly its commitment to innovation. In my previous role at ${d.exps[0]?.company || 'my university'}, I honed my skills in ${j.keywords.slice(0,3).join(', ')}, which aligns perfectly with the requirements for this role.
+
+Specifically, I have experience using ${j.keywords[0]} to solve complex problems, a skill I am eager to apply at ${j.company}. I am a quick learner and thrive in collaborative environments.
+
+Thank you for considering my application. I look forward to the possibility of discussing how my skills and experiences align with the needs of your team.
+
+Sincerely,
+
+${d.name}
+  `;
+  
+  document.getElementById('coverLetterPreview').innerText = text.trim();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (tab === 'resume') {
+    document.getElementById('tabResume').classList.add('active');
+    document.getElementById('viewResume').style.display = 'block';
+    document.getElementById('viewCover').style.display = 'none';
+  } else {
+    document.getElementById('tabCover').classList.add('active');
+    document.getElementById('viewResume').style.display = 'none';
+    document.getElementById('viewCover').style.display = 'block';
+  }
+}
+</script>
+
+</body>
+</html>
