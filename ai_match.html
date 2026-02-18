@@ -1065,9 +1065,9 @@ function loadResumeVersions() {
           selector.appendChild(opt);
         });
         
-        // Auto-select first resume
-        selector.value = 0;
-        loadSelectedResume();
+        // Don't auto-select first resume
+        // selector.value = 0;
+        // loadSelectedResume();
     }
   } catch (e) {
     console.error("Error loading resume versions:", e);
@@ -1079,9 +1079,15 @@ function loadResumeVersions() {
       opt.value = "demo";
       opt.innerText = "📄 Demo Resume (Michael Scott)";
       selector.appendChild(opt);
-      // Auto-select demo
+      // Auto-select demo ONLY if no user resume exists
       selector.value = "demo";
       loadSelectedResume();
+  } else {
+      // Add Demo Option as an alternative
+      const opt = document.createElement('option');
+      opt.value = "demo";
+      opt.innerText = "📄 Demo Resume (Michael Scott)";
+      selector.appendChild(opt);
   }
 }
 
