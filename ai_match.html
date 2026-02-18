@@ -234,39 +234,39 @@ let tailoredCoverLetterText = "";
 // --- Job Database (Expanded for diverse roles) ---
 const JOB_CATEGORIES = {
   "marketing": [
-    { title: "Marketing Coordinator", company: "Coca-Cola", location: "Atlanta, GA", keywords: ["Social Media", "SEO", "Content Creation", "Market Research", "Campaign Management"], desc: "Support marketing campaigns and social media strategy." },
-    { title: "Social Media Manager", company: "TikTok", location: "Los Angeles, CA", keywords: ["Analytics", "Community Management", "Copywriting", "Brand Strategy", "Creative"], desc: "Manage brand presence and engage with community." },
-    { title: "Digital Marketing Specialist", company: "HubSpot", location: "Cambridge, MA", keywords: ["SEM", "PPC", "Google Analytics", "Email Marketing", "CRM"], desc: "Optimize digital channels and drive lead generation." },
-    { title: "Communications Specialist", company: "Edelman", location: "New York, NY", keywords: ["Public Relations", "Press Releases", "Media Relations", "Corporate Communications", "Writing"], desc: "Draft press materials and manage media inquiries." },
-    { title: "Brand Ambassador", company: "Red Bull", location: "Chicago, IL", keywords: ["Event Marketing", "Customer Service", "Sales", "Networking", "Promotions"], desc: "Represent the brand at events and drive awareness." },
-    { title: "Content Strategist", company: "Netflix", location: "Los Gatos, CA", keywords: ["Content Strategy", "Storytelling", "Editorial", "Social Media", "Video Production"], desc: "Develop content strategies for original series." },
-    { title: "Product Marketing Manager", company: "Salesforce", location: "San Francisco, CA", keywords: ["GTM Strategy", "Product Launch", "Sales Enablement", "Messaging", "B2B"], desc: "Lead go-to-market strategies for new products." },
-    { title: "PR Coordinator", company: "Disney", location: "Burbank, CA", keywords: ["Public Relations", "Media Lists", "Events", "Press Kits", "Communication"], desc: "Assist with PR campaigns and media events." }
+    { title: "Marketing Coordinator", company: "Coca-Cola", location: "Atlanta, GA", keywords: ["Social Media", "SEO", "Content Creation", "Market Research", "Campaign Management"], desc: "Support marketing campaigns and social media strategy.", sponsor: false },
+    { title: "Social Media Manager", company: "TikTok", location: "Los Angeles, CA", keywords: ["Analytics", "Community Management", "Copywriting", "Brand Strategy", "Creative"], desc: "Manage brand presence and engage with community.", sponsor: true },
+    { title: "Digital Marketing Specialist", company: "HubSpot", location: "Cambridge, MA", keywords: ["SEM", "PPC", "Google Analytics", "Email Marketing", "CRM"], desc: "Optimize digital channels and drive lead generation.", sponsor: true },
+    { title: "Communications Specialist", company: "Edelman", location: "New York, NY", keywords: ["Public Relations", "Press Releases", "Media Relations", "Corporate Communications", "Writing"], desc: "Draft press materials and manage media inquiries.", sponsor: false },
+    { title: "Brand Ambassador", company: "Red Bull", location: "Chicago, IL", keywords: ["Event Marketing", "Customer Service", "Sales", "Networking", "Promotions"], desc: "Represent the brand at events and drive awareness.", sponsor: false },
+    { title: "Content Strategist", company: "Netflix", location: "Los Gatos, CA", keywords: ["Content Strategy", "Storytelling", "Editorial", "Social Media", "Video Production"], desc: "Develop content strategies for original series.", sponsor: true },
+    { title: "Product Marketing Manager", company: "Salesforce", location: "San Francisco, CA", keywords: ["GTM Strategy", "Product Launch", "Sales Enablement", "Messaging", "B2B"], desc: "Lead go-to-market strategies for new products.", sponsor: true },
+    { title: "PR Coordinator", company: "Disney", location: "Burbank, CA", keywords: ["Public Relations", "Media Lists", "Events", "Press Kits", "Communication"], desc: "Assist with PR campaigns and media events.", sponsor: false }
   ],
   "business": [
-    { title: "Business Analyst", company: "McKinsey & Company", location: "New York, NY", keywords: ["Data Analysis", "Excel", "PowerPoint", "Strategy", "Consulting"], desc: "Analyze business processes and recommend improvements." },
-    { title: "Financial Analyst", company: "Goldman Sachs", location: "New York, NY", keywords: ["Financial Modeling", "Valuation", "Accounting", "Excel", "Finance"], desc: "Conduct financial analysis and market research." },
-    { title: "Operations Intern", company: "Amazon", location: "Seattle, WA", keywords: ["Operations", "Logistics", "Supply Chain", "Process Improvement", "Data Analysis"], desc: "Support fulfillment center operations and efficiency." },
-    { title: "HR Assistant", company: "Google", location: "Mountain View, CA", keywords: ["Human Resources", "Recruiting", "Employee Relations", "Communication", "Admin"], desc: "Assist with recruitment and employee onboarding." },
-    { title: "Sales Representative", company: "Salesforce", location: "San Francisco, CA", keywords: ["Sales", "CRM", "Negotiation", "Lead Generation", "Communication"], desc: "Drive sales revenue and manage client relationships." },
-    { title: "Management Trainee", company: "Enterprise", location: "St. Louis, MO", keywords: ["Management", "Sales", "Customer Service", "Leadership", "Operations"], desc: "Learn all aspects of business management and operations." }
+    { title: "Business Analyst", company: "McKinsey & Company", location: "New York, NY", keywords: ["Data Analysis", "Excel", "PowerPoint", "Strategy", "Consulting"], desc: "Analyze business processes and recommend improvements.", sponsor: true },
+    { title: "Financial Analyst", company: "Goldman Sachs", location: "New York, NY", keywords: ["Financial Modeling", "Valuation", "Accounting", "Excel", "Finance"], desc: "Conduct financial analysis and market research.", sponsor: true },
+    { title: "Operations Intern", company: "Amazon", location: "Seattle, WA", keywords: ["Operations", "Logistics", "Supply Chain", "Process Improvement", "Data Analysis"], desc: "Support fulfillment center operations and efficiency.", sponsor: true },
+    { title: "HR Assistant", company: "Google", location: "Mountain View, CA", keywords: ["Human Resources", "Recruiting", "Employee Relations", "Communication", "Admin"], desc: "Assist with recruitment and employee onboarding.", sponsor: true },
+    { title: "Sales Representative", company: "Salesforce", location: "San Francisco, CA", keywords: ["Sales", "CRM", "Negotiation", "Lead Generation", "Communication"], desc: "Drive sales revenue and manage client relationships.", sponsor: true },
+    { title: "Management Trainee", company: "Enterprise", location: "St. Louis, MO", keywords: ["Management", "Sales", "Customer Service", "Leadership", "Operations"], desc: "Learn all aspects of business management and operations.", sponsor: false }
   ],
   "design": [
-    { title: "UI/UX Designer", company: "Airbnb", location: "San Francisco, CA", keywords: ["Figma", "Sketch", "Prototyping", "User Research", "Wireframing"], desc: "Design intuitive user interfaces and experiences." },
-    { title: "Graphic Designer", company: "Nike", location: "Beaverton, OR", keywords: ["Adobe Creative Suite", "Photoshop", "Illustrator", "Branding", "Typography"], desc: "Create visual assets for marketing campaigns." },
-    { title: "Product Designer", company: "Spotify", location: "New York, NY", keywords: ["Product Design", "UX", "Visual Design", "Interaction Design", "Prototyping"], desc: "Design new features for the Spotify app." },
-    { title: "Visual Designer", company: "Apple", location: "Cupertino, CA", keywords: ["Visual Design", "Iconography", "Sketch", "Photoshop", "Detail Oriented"], desc: "Create stunning visuals for Apple products." }
+    { title: "UI/UX Designer", company: "Airbnb", location: "San Francisco, CA", keywords: ["Figma", "Sketch", "Prototyping", "User Research", "Wireframing"], desc: "Design intuitive user interfaces and experiences.", sponsor: true },
+    { title: "Graphic Designer", company: "Nike", location: "Beaverton, OR", keywords: ["Adobe Creative Suite", "Photoshop", "Illustrator", "Branding", "Typography"], desc: "Create visual assets for marketing campaigns.", sponsor: true },
+    { title: "Product Designer", company: "Spotify", location: "New York, NY", keywords: ["Product Design", "UX", "Visual Design", "Interaction Design", "Prototyping"], desc: "Design new features for the Spotify app.", sponsor: true },
+    { title: "Visual Designer", company: "Apple", location: "Cupertino, CA", keywords: ["Visual Design", "Iconography", "Sketch", "Photoshop", "Detail Oriented"], desc: "Create stunning visuals for Apple products.", sponsor: true }
   ],
   "engineering": [
-    { title: "Software Engineer Intern", company: "Google", location: "Mountain View, CA", keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App"], desc: "Design and implement software solutions." },
-    { title: "Data Analyst", company: "Meta", location: "Menlo Park, CA", keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization"], desc: "Analyze data to drive product decisions." },
-    { title: "Frontend Engineer", company: "Airbnb", location: "Remote", keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS"], desc: "Build modern web applications." },
-    { title: "Machine Learning Engineer", company: "OpenAI", location: "San Francisco, CA", keywords: ["Deep Learning", "PyTorch", "Python", "LLM", "AI"], desc: "Train and deploy large language models." }
+    { title: "Software Engineer Intern", company: "Google", location: "Mountain View, CA", keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App"], desc: "Design and implement software solutions.", sponsor: true },
+    { title: "Data Analyst", company: "Meta", location: "Menlo Park, CA", keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization"], desc: "Analyze data to drive product decisions.", sponsor: true },
+    { title: "Frontend Engineer", company: "Airbnb", location: "Remote", keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS"], desc: "Build modern web applications.", sponsor: true },
+    { title: "Machine Learning Engineer", company: "OpenAI", location: "San Francisco, CA", keywords: ["Deep Learning", "PyTorch", "Python", "LLM", "AI"], desc: "Train and deploy large language models.", sponsor: true }
   ],
   "science": [
-    { title: "Bioinformatics Associate", company: "Genentech", location: "South San Francisco, CA", keywords: ["Python", "R", "NGS", "Genomics", "Biology"], desc: "Analyze genomic data for drug discovery." },
-    { title: "Research Associate", company: "Pfizer", location: "Cambridge, MA", keywords: ["Lab Techniques", "PCR", "Cell Culture", "Data Analysis", "Biology"], desc: "Conduct experiments to support vaccine development." },
-    { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations." }
+    { title: "Bioinformatics Associate", company: "Genentech", location: "South San Francisco, CA", keywords: ["Python", "R", "NGS", "Genomics", "Biology"], desc: "Analyze genomic data for drug discovery.", sponsor: true },
+    { title: "Research Associate", company: "Pfizer", location: "Cambridge, MA", keywords: ["Lab Techniques", "PCR", "Cell Culture", "Data Analysis", "Biology"], desc: "Conduct experiments to support vaccine development.", sponsor: true },
+    { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations.", sponsor: false }
   ]
 };
 
@@ -449,8 +449,14 @@ function renderJobs() {
     const div = document.createElement('div');
     div.className = 'job-item';
     div.onclick = () => selectJob(job, div);
+    
+    let sponsorBadge = '';
+    if (job.sponsor) {
+        sponsorBadge = '<span style="font-size:10px;background:#dafbe1;color:#1a7f37;padding:1px 4px;border-radius:4px;margin-left:6px;border:1px solid rgba(26,127,55,0.2)">🇺🇸 Visa Friendly</span>';
+    }
+
     div.innerHTML = `
-      <div class="job-title">${job.title}</div>
+      <div class="job-title">${job.title}${sponsorBadge}</div>
       <div class="job-company">
         <span>${job.company}</span>
         <span>${job.location}</span>
@@ -468,7 +474,13 @@ function selectJob(job, el) {
   
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('workspace').style.display = 'flex';
-  document.getElementById('activeJobTitle').innerText = `${job.title} @ ${job.company}`;
+  
+  let sponsorBadge = '';
+  if (job.sponsor) {
+      sponsorBadge = '<span style="font-size:12px;background:#dafbe1;color:#1a7f37;padding:2px 6px;border-radius:10px;margin-left:8px;vertical-align:middle;border:1px solid rgba(26,127,55,0.2)">🇺🇸 Visa Sponsorship Available</span>';
+  }
+  
+  document.getElementById('activeJobTitle').innerHTML = `${job.title} @ ${job.company} ${sponsorBadge}`;
   
   // Set Job Link
   const jobLink = document.getElementById('jobLink');
