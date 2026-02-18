@@ -1100,6 +1100,7 @@ function loadSelectedResume() {
   if (index === "demo") {
       currentResume = MOCK_RESUME_DATA;
       console.log("Loaded Demo Resume");
+      analyzeResumeAndRenderJobs(); // Refresh job list
       if (currentJob) analyzeMatch();
       return;
   }
@@ -1109,6 +1110,7 @@ function loadSelectedResume() {
     if (versions[index]) {
       currentResume = versions[index].data;
       console.log("Loaded Resume:", currentResume.name);
+      analyzeResumeAndRenderJobs(); // Refresh job list
       if (currentJob) {
           analyzeMatch();
       }
