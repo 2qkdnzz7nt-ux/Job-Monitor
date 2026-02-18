@@ -426,7 +426,12 @@ function analyzeResumeAndRenderJobs() {
   
   document.querySelector('.sidebar-header').innerHTML = `
       <div style="font-weight:600; margin-bottom:8px">Daily Top 10 Matches <span style="font-size:12px;color:#0969da;background:#ddf4ff;padding:2px 6px;border-radius:10px;margin-left:4px">${catTitle} Focus</span></div>
-      <div style="font-size:12px; color:#57606a">Based on your profile • ${dateStr}</div>
+      <div style="font-size:12px; color:#57606a; display:flex; justify-content:space-between; align-items:center;">
+          <span>Based on your profile • ${dateStr}</span>
+          <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-weight:600; color:#1a7f37;">
+             <input type="checkbox" id="visaToggle" onchange="renderJobs()"> 🛂 Visa Only
+          </label>
+      </div>
   `;
 
   renderJobs();
@@ -460,8 +465,11 @@ function showToast(msg) {
 
 function renderJobs() {
   const list = document.getElementById('jobList');
+  const visaOnly = document.getElementById('visaToggle')?.checked;
   list.innerHTML = '';
   MOCK_JOBS.forEach(job => {
+    if (visaOnly && !job.sponsor) return;
+    
     const div = document.createElement('div');
     div.className = 'job-item';
     div.onclick = () => selectJob(job, div);

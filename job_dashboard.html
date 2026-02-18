@@ -69,9 +69,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
           <button id="editTagsBtn" onclick="toggleEditMode()" class="btn btn-outline" style="font-size:12px;padding:4px 10px">Edit Tags ✏️</button>
         </div>
         
-        <div class="search-box">
+        <div class="search-box" style="align-items:center">
           <input type="text" id="keywords" class="search-input" value="Software Engineer Intern" placeholder="e.g. Data Scientist Intern">
           <input type="text" id="location" class="search-input" value="United States" placeholder="Location" style="max-width:140px">
+          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:8px;font-size:13px;user-select:none;background:#e6f7ff;padding:4px 8px;border-radius:6px;border:1px solid #0969da30">
+            <input type="checkbox" id="visaFilter" style="cursor:pointer">
+            <label for="visaFilter" style="cursor:pointer;color:#0969da;font-weight:600" title="Automatically add 'visa sponsorship' to your search">🛂 Visa Only</label>
+          </div>
         </div>
         
         <div id="quickTags"></div>
@@ -275,6 +279,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
             国际生求职核心资源 (CPT/OPT/H1B)。优先锁定 E-Verify 认证雇主。
          </div>
          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="https://www.myvisajobs.com/Search_Visa_Sponsor.aspx" target="_blank" class="btn btn-outline" style="text-align:left;justify-content:flex-start;font-size:12px;color:#d9534f;font-weight:bold;border-color:#d9534f">
+               🔍 Search H1B Sponsors Database (Check Company)
+            </a>
             <a href="https://www.myvisajobs.com/Reports/2024-H1B-Visa-Sponsor.aspx" target="_blank" class="btn btn-outline" style="text-align:left;justify-content:flex-start;font-size:12px">
                📊 Top H1B Sponsors Report (MyVisaJobs)
             </a>
@@ -383,7 +390,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 // --- Quick Search Logic ---
 // Removed simple setKey function here, moved below to handle special links
 function openSearch(platform){
-  const k = encodeURIComponent(document.getElementById('keywords').value);
+  let rawK = document.getElementById('keywords').value;
+  const visa = document.getElementById('visaFilter').checked;
+  
+  // Smart Visa Filter Logic
+  // We append keywords that specifically signal sponsorship support
+  if (visa) {
+     rawK += ' ("visa sponsorship" OR "h1b" OR "international students")';
+  }
+
+  const k = encodeURIComponent(rawK);
   const l = encodeURIComponent(document.getElementById('location').value);
   let url = '';
   
