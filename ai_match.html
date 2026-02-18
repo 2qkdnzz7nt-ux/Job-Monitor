@@ -230,93 +230,60 @@ let currentResume = null;
 let currentJob = null;
 let tailoredResumeData = null;
 let tailoredCoverLetterText = "";
-const MOCK_JOBS = [
-  {
-    id: 1,
-    title: "Software Engineer Intern",
-    company: "Google",
-    location: "Mountain View, CA",
-    desc: "Qualifications:\n• Experience with Python, C++, or Java.\n• Knowledge of Data Structures and Algorithms.\n• Experience with Mobile App Development (iOS/Android) is a plus.\n• Currently pursuing a BS in Computer Science or related field.\n\nResponsibilities:\n• Design and implement software solutions.\n• Collaborate with cross-functional teams to define features.",
-    keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App", "iOS", "Android", "Computer Science"]
-  },
-  {
-    id: 2,
-    title: "Data Analyst (New Grad)",
-    company: "Meta",
-    location: "Menlo Park, CA",
-    desc: "We are looking for a Data Analyst to join our Analytics team.\n\nRequirements:\n• Strong proficiency in SQL and Python.\n• Experience with data visualization tools (Tableau, PowerBI).\n• Ability to communicate complex data insights.\n• Degree in Statistics, Math, Engineering or related.\n• Knowledge of A/B testing.",
-    keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization", "Statistics", "A/B Testing", "Communication"]
-  },
-  {
-    id: 3,
-    title: "Bioinformatics Associate",
-    company: "Genentech",
-    location: "South San Francisco, CA",
-    desc: "Join our Research team to analyze genomic data.\n\nSkills:\n• Proficiency in Python or R.\n• Experience with NGS data analysis.\n• Background in Biology, Genetics, or Bioengineering.\n• Familiarity with Linux/Unix environment.\n• Strong problem-solving skills.",
-    keywords: ["Python", "R", "NGS", "Genomics", "Biology", "Bioengineering", "Linux", "Unix", "Research"]
-  },
-  {
-    id: 4,
-    title: "AgTech Software Developer",
-    company: "John Deere",
-    location: "Austin, TX",
-    desc: "Building the future of autonomous farming.\n\nMust Haves:\n• Experience with Embedded Systems or IoT.\n• Proficiency in C++ or Python.\n• Understanding of Agricultural Engineering principles.\n• Experience with GPS/GIS data.\n• Collaborative mindset.",
-    keywords: ["Embedded Systems", "IoT", "C++", "Python", "Agriculture", "GPS", "GIS", "Engineering"]
-  },
-  {
-    id: 5,
-    title: "Product Manager Intern",
-    company: "Microsoft",
-    location: "Redmond, WA",
-    desc: "Define the future of productivity.\n\nLooking for:\n• Strong analytical and communication skills.\n• Experience leading projects or clubs.\n• Understanding of software development lifecycle (SDLC).\n• Passion for technology and user experience.\n• Currently enrolled in a Bachelor's program.",
-    keywords: ["Product Management", "Communication", "Leadership", "SDLC", "User Experience", "Analytical Skills", "Technology"]
-  },
-  {
-    id: 6,
-    title: "Machine Learning Engineer",
-    company: "OpenAI",
-    location: "San Francisco, CA",
-    desc: "Help us build safe AGI.\n\nRequirements:\n• Deep understanding of Deep Learning (PyTorch/TensorFlow).\n• Strong software engineering skills (Python).\n• Experience with large language models (LLMs).\n• Research experience in AI/ML.\n• Ability to work in a fast-paced environment.",
-    keywords: ["Deep Learning", "PyTorch", "TensorFlow", "Python", "LLM", "Machine Learning", "Research", "AI"]
-  },
-  {
-    id: 7,
-    title: "Frontend Engineer",
-    company: "Airbnb",
-    location: "Remote",
-    desc: "Create beautiful user interfaces.\n\nSkills:\n• Expert in JavaScript/TypeScript, React, and HTML/CSS.\n• Experience with modern web frameworks.\n• Understanding of web performance and accessibility.\n• Eye for design and detail.\n• Experience with GraphQL is a plus.",
-    keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS", "Web Performance", "Accessibility", "GraphQL", "Design"]
-  },
-  {
-    id: 8,
-    title: "Research Assistant (Robotics)",
-    company: "Tesla",
-    location: "Palo Alto, CA",
-    desc: "Work on the Tesla Bot.\n\nQualifications:\n• Experience with ROS (Robot Operating System).\n• Strong C++ and Python skills.\n• Background in Mechanical or Electrical Engineering.\n• Experience with control systems and sensors.\n• Hands-on prototyping experience.",
-    keywords: ["ROS", "C++", "Python", "Robotics", "Mechanical Engineering", "Control Systems", "Sensors", "Prototyping"]
-  },
-  {
-    id: 9,
-    title: "Quantitative Researcher",
-    company: "Citadel",
-    location: "New York, NY",
-    desc: "Apply math to financial markets.\n\nRequirements:\n• Advanced degree in Math, Physics, or CS.\n• Strong programming skills in C++ or Python.\n• Knowledge of probability and statistics.\n• Experience with large datasets.\n• Competitive programming experience is a plus.",
-    keywords: ["Math", "Physics", "C++", "Python", "Statistics", "Probability", "Data Analysis", "Finance"]
-  },
-  {
-    id: 10,
-    title: "Full Stack Developer",
-    company: "Stripe",
-    location: "Seattle, WA",
-    desc: "Build the economic infrastructure of the internet.\n\nLooking for:\n• Experience with Ruby, Java, or Go.\n• Experience with React or modern frontend frameworks.\n• Strong understanding of APIs and database design.\n• Ability to write high-quality, maintainable code.\n• User-centric mindset.",
-    keywords: ["Ruby", "Java", "Go", "React", "API", "Database", "Full Stack", "Web Development"]
-  }
-];
+
+// --- Job Database (Expanded for diverse roles) ---
+const JOB_CATEGORIES = {
+  "marketing": [
+    { title: "Marketing Coordinator", company: "Coca-Cola", location: "Atlanta, GA", keywords: ["Social Media", "SEO", "Content Creation", "Market Research", "Campaign Management"], desc: "Support marketing campaigns and social media strategy." },
+    { title: "Social Media Manager", company: "TikTok", location: "Los Angeles, CA", keywords: ["Analytics", "Community Management", "Copywriting", "Brand Strategy", "Creative"], desc: "Manage brand presence and engage with community." },
+    { title: "Digital Marketing Specialist", company: "HubSpot", location: "Cambridge, MA", keywords: ["SEM", "PPC", "Google Analytics", "Email Marketing", "CRM"], desc: "Optimize digital channels and drive lead generation." },
+    { title: "Communications Specialist", company: "Edelman", location: "New York, NY", keywords: ["Public Relations", "Press Releases", "Media Relations", "Corporate Communications", "Writing"], desc: "Draft press materials and manage media inquiries." },
+    { title: "Brand Ambassador", company: "Red Bull", location: "Chicago, IL", keywords: ["Event Marketing", "Customer Service", "Sales", "Networking", "Promotions"], desc: "Represent the brand at events and drive awareness." },
+    { title: "Content Strategist", company: "Netflix", location: "Los Gatos, CA", keywords: ["Content Strategy", "Storytelling", "Editorial", "Social Media", "Video Production"], desc: "Develop content strategies for original series." },
+    { title: "Product Marketing Manager", company: "Salesforce", location: "San Francisco, CA", keywords: ["GTM Strategy", "Product Launch", "Sales Enablement", "Messaging", "B2B"], desc: "Lead go-to-market strategies for new products." },
+    { title: "PR Coordinator", company: "Disney", location: "Burbank, CA", keywords: ["Public Relations", "Media Lists", "Events", "Press Kits", "Communication"], desc: "Assist with PR campaigns and media events." }
+  ],
+  "business": [
+    { title: "Business Analyst", company: "McKinsey & Company", location: "New York, NY", keywords: ["Data Analysis", "Excel", "PowerPoint", "Strategy", "Consulting"], desc: "Analyze business processes and recommend improvements." },
+    { title: "Financial Analyst", company: "Goldman Sachs", location: "New York, NY", keywords: ["Financial Modeling", "Valuation", "Accounting", "Excel", "Finance"], desc: "Conduct financial analysis and market research." },
+    { title: "Operations Intern", company: "Amazon", location: "Seattle, WA", keywords: ["Operations", "Logistics", "Supply Chain", "Process Improvement", "Data Analysis"], desc: "Support fulfillment center operations and efficiency." },
+    { title: "HR Assistant", company: "Google", location: "Mountain View, CA", keywords: ["Human Resources", "Recruiting", "Employee Relations", "Communication", "Admin"], desc: "Assist with recruitment and employee onboarding." },
+    { title: "Sales Representative", company: "Salesforce", location: "San Francisco, CA", keywords: ["Sales", "CRM", "Negotiation", "Lead Generation", "Communication"], desc: "Drive sales revenue and manage client relationships." },
+    { title: "Management Trainee", company: "Enterprise", location: "St. Louis, MO", keywords: ["Management", "Sales", "Customer Service", "Leadership", "Operations"], desc: "Learn all aspects of business management and operations." }
+  ],
+  "design": [
+    { title: "UI/UX Designer", company: "Airbnb", location: "San Francisco, CA", keywords: ["Figma", "Sketch", "Prototyping", "User Research", "Wireframing"], desc: "Design intuitive user interfaces and experiences." },
+    { title: "Graphic Designer", company: "Nike", location: "Beaverton, OR", keywords: ["Adobe Creative Suite", "Photoshop", "Illustrator", "Branding", "Typography"], desc: "Create visual assets for marketing campaigns." },
+    { title: "Product Designer", company: "Spotify", location: "New York, NY", keywords: ["Product Design", "UX", "Visual Design", "Interaction Design", "Prototyping"], desc: "Design new features for the Spotify app." },
+    { title: "Visual Designer", company: "Apple", location: "Cupertino, CA", keywords: ["Visual Design", "Iconography", "Sketch", "Photoshop", "Detail Oriented"], desc: "Create stunning visuals for Apple products." }
+  ],
+  "engineering": [
+    { title: "Software Engineer Intern", company: "Google", location: "Mountain View, CA", keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App"], desc: "Design and implement software solutions." },
+    { title: "Data Analyst", company: "Meta", location: "Menlo Park, CA", keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization"], desc: "Analyze data to drive product decisions." },
+    { title: "Frontend Engineer", company: "Airbnb", location: "Remote", keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS"], desc: "Build modern web applications." },
+    { title: "Machine Learning Engineer", company: "OpenAI", location: "San Francisco, CA", keywords: ["Deep Learning", "PyTorch", "Python", "LLM", "AI"], desc: "Train and deploy large language models." }
+  ],
+  "science": [
+    { title: "Bioinformatics Associate", company: "Genentech", location: "South San Francisco, CA", keywords: ["Python", "R", "NGS", "Genomics", "Biology"], desc: "Analyze genomic data for drug discovery." },
+    { title: "Research Associate", company: "Pfizer", location: "Cambridge, MA", keywords: ["Lab Techniques", "PCR", "Cell Culture", "Data Analysis", "Biology"], desc: "Conduct experiments to support vaccine development." },
+    { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations." }
+  ]
+};
+
+const KEYWORD_MAPPING = {
+  "marketing": ["marketing", "social media", "communication", "communications", "brand", "content", "seo", "sem", "advertising", "pr", "media", "campaign", "copywriting", "market research", "digital", "public relations", "strategic", "market", "promotion"],
+  "business": ["business", "management", "finance", "consulting", "sales", "strategy", "operations", "economics", "accounting", "admin", "hr", "analyst", "project management", "entrepreneurship", "commerce"],
+  "design": ["design", "ui", "ux", "graphic", "adobe", "figma", "sketch", "creative", "art", "visual", "multimedia", "animation", "illustration"],
+  "engineering": ["software", "developer", "engineer", "coding", "programming", "java", "python", "c++", "react", "computer", "tech", "data", "aws", "cloud", "full stack", "backend", "frontend", "cs"],
+  "science": ["biology", "chemistry", "lab", "research", "science", "genetics", "bioinformatics", "pharmaceutical", "medical", "clinical", "physics", "neuroscience", "biotech", "ag"]
+};
+
+let MOCK_JOBS = []; // Will be populated dynamically
 
 // --- Initialization ---
 document.getElementById('todayDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 loadResumeVersions();
-renderJobs();
+// renderJobs() is now called inside loadSelectedResume -> analyzeResumeAndRenderJobs
 
 // --- Functions ---
 function loadResumeVersions() {
@@ -337,7 +304,7 @@ function loadResumeVersions() {
       sel.add(opt);
     });
     // Select first one by default
-    sel.selectedIndex = 1; 
+    sel.selectedIndex = 0; // Changed to 0 (first item)
     loadSelectedResume();
   } catch (e) {
     console.error(e);
@@ -349,12 +316,130 @@ function loadSelectedResume() {
   if (idx === "") return;
   const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
   currentResume = versions[idx].data;
+  
   // Reset view
   document.getElementById('workspace').style.display = 'none';
   document.getElementById('emptyState').style.display = 'block';
   document.getElementById('tailorBtn').disabled = true;
-  // Clear active job
   document.querySelectorAll('.job-item').forEach(el => el.classList.remove('active'));
+
+  // Analyze and Render Jobs
+  analyzeResumeAndRenderJobs();
+}
+
+function analyzeResumeAndRenderJobs() {
+  if (!currentResume) return;
+
+  // 1. Extract text from resume
+  const resumeText = JSON.stringify(currentResume).toLowerCase();
+  
+  // 2. Score categories
+  const scores = {};
+  
+  // Base keyword scoring
+  for (const [category, keywords] of Object.entries(KEYWORD_MAPPING)) {
+    let count = 0;
+    keywords.forEach(k => {
+      // Simple occurrence check
+      if (resumeText.includes(k)) count++;
+      // Boost if it's in the "Education" section specifically (heuristic)
+      if (currentResume.edu && JSON.stringify(currentResume.edu).toLowerCase().includes(k)) {
+          count += 3; // Weight education matches EVEN HIGHER
+      }
+    });
+    scores[category] = count;
+  }
+  
+  // 3. Determine top category
+  let topCategory = "engineering"; // Default
+  let maxScore = -1;
+  
+  console.log("Category Scores:", scores); // Debugging
+
+  for (const [category, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      topCategory = category;
+    }
+  }
+  
+  // Fallback / Override: Check major/degree explicitly
+  // If the resume has education, we trust the major more than random keywords
+  if (currentResume.edu && currentResume.edu.length > 0) {
+      const edu = currentResume.edu[0];
+      const degree = (edu.degree || "").toLowerCase();
+      const major = (edu.major || "").toLowerCase();
+      const combined = degree + " " + major;
+      
+      // Override if specific keywords are found in major/degree
+      if (combined.includes('art') || combined.includes('design')) topCategory = 'design';
+      else if (combined.includes('business') || combined.includes('finance') || combined.includes('econ') || combined.includes('mba') || combined.includes('commerce')) topCategory = 'business';
+      else if (combined.includes('market') || combined.includes('comm') || combined.includes('public relation') || combined.includes('media') || combined.includes('advertising')) topCategory = 'marketing';
+      else if (combined.includes('bio') || combined.includes('chem') || combined.includes('sci') || combined.includes('physics') || combined.includes('ag')) topCategory = 'science';
+      else if (combined.includes('eng') || combined.includes('cs') || combined.includes('comp') || combined.includes('tech')) topCategory = 'engineering';
+  }
+
+  // 4. Generate Job List
+  // Start with all jobs from the top category
+  let jobs = [...(JOB_CATEGORIES[topCategory] || [])];
+  
+  // Add limited "Wildcard" jobs (max 2)
+  const otherCategories = Object.keys(JOB_CATEGORIES).filter(c => c !== topCategory);
+  // Shuffle other categories to get random variety
+  otherCategories.sort(() => 0.5 - Math.random());
+  
+  // Take 1 job from first 2 random other categories
+  otherCategories.slice(0, 2).forEach(c => {
+    if (JOB_CATEGORIES[c] && JOB_CATEGORIES[c].length > 0) {
+        jobs.push(JOB_CATEGORIES[c][0]); 
+    }
+  });
+
+  // Shuffle final list
+  jobs = jobs.sort(() => 0.5 - Math.random());
+  
+  // Limit to 10
+  MOCK_JOBS = jobs.slice(0, 10).map((job, index) => ({
+      ...job,
+      id: index + 1
+  }));
+  
+  // Update Header Text to show personalization
+  const catTitle = topCategory.charAt(0).toUpperCase() + topCategory.slice(1);
+  const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  
+  document.querySelector('.sidebar-header').innerHTML = `
+      <div style="font-weight:600; margin-bottom:8px">Daily Top 10 Matches <span style="font-size:12px;color:#0969da;background:#ddf4ff;padding:2px 6px;border-radius:10px;margin-left:4px">${catTitle} Focus</span></div>
+      <div style="font-size:12px; color:#57606a">Based on your profile • ${dateStr}</div>
+  `;
+
+  renderJobs();
+  
+  // Show Toast
+  showToast(`Jobs refreshed for ${currentResume.name || 'Resume'}!`);
+}
+
+function showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:12px 24px;border-radius:4px;z-index:1000;display:none;transition:opacity 0.3s;font-size:14px;box-shadow:0 2px 5px rgba(0,0,0,0.2);';
+        document.body.appendChild(toast);
+    }
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    // Trigger reflow
+    void toast.offsetWidth;
+    toast.style.opacity = '1';
+    
+    // Clear previous timeout if any
+    if (toast.timeoutId) clearTimeout(toast.timeoutId);
+    
+    toast.timeoutId = setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.style.display = 'none', 300);
+    }, 3000);
 }
 
 function renderJobs() {
