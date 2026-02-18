@@ -88,7 +88,7 @@
   .empty-state { text-align: center; padding: 40px; color: #57606a; }
   
   @media print {
-     @page { margin: 0.3in; size: Letter; }
+     @page { margin: 0.45in 0.5in; size: auto; }
      
      /* Ensure body settings for print */
      body { 
@@ -114,7 +114,7 @@
        background: white;
      }
 
-     /* Reset preview styles for print */
+     /* Reset preview styles for print - MATCHING RESUME_FORM.HTML EXACTLY */
      .resume-preview { 
        width: 100% !important; 
        max-width: 100% !important; 
@@ -122,17 +122,19 @@
        padding: 0 !important; 
        box-shadow: none !important; 
        border: none !important;
-       font-size: 12.5pt !important;
-       line-height: 1.12 !important;
+       font-family: "Times New Roman", Times, serif !important;
+       font-size: 10.8pt !important;
+       line-height: 1.2 !important;
+       color: #000 !important;
      }
  
-     .resume-preview h1 { font-size: 22pt !important; margin-bottom: 2px !important; }
-     .resume-preview h3 { font-size: 13pt !important; margin: 6px 0 2px !important; }
-     .resume-preview .contact-info { margin-bottom: 4px !important; font-size: 11pt !important; }
-     .resume-preview ul { margin-top: 0 !important; margin-bottom: 0 !important; }
-     .resume-preview li { margin: 0 !important; }
-     .resume-preview .resume-sub { margin-bottom: 1px !important; font-size: 12.5pt !important; }
-     .resume-item { page-break-inside: avoid; margin-bottom: 2px; }
+     .resume-preview h1 { font-size: 20pt !important; margin-bottom: 6px !important; }
+     .resume-preview h3 { font-size: 11pt !important; margin: 12px 0 6px !important; }
+     .resume-preview .contact-info { margin-bottom: 14px !important; font-size: 10pt !important; }
+     .resume-preview ul { margin-top: 1px !important; margin-bottom: 0 !important; }
+     .resume-preview li { margin: 0.5px 0 !important; font-size: 10pt !important; }
+     .resume-preview .resume-sub { margin-bottom: 1px !important; font-size: 10.8pt !important; }
+     .resume-item { page-break-inside: avoid; margin-bottom: 0; }
      .resume-row { margin-bottom: 0 !important; }
      
      /* Prevent page breaks inside items */
