@@ -87,7 +87,7 @@
   .empty-state { text-align: center; padding: 40px; color: #57606a; }
   
   @media print {
-     @page { margin: 10mm; size: A4; }
+     @page { margin: 0.5in; size: Letter; }
      body { background-color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; height: auto !important; }
      
      /* Hide everything by default using visibility to avoid layout issues */
@@ -117,7 +117,15 @@
        padding: 0 !important; 
        box-shadow: none !important; 
        border: none !important;
+       font-size: 11pt !important;
+       line-height: 1.15 !important;
      }
+
+     .resume-preview h1 { font-size: 18pt !important; margin-bottom: 4px !important; }
+     .resume-preview h3 { font-size: 11pt !important; margin: 8px 0 4px !important; }
+     .resume-preview .contact-info { margin-bottom: 8px !important; font-size: 9pt !important; }
+     .resume-preview ul { margin-top: 0 !important; margin-bottom: 2px !important; }
+     .resume-preview li { margin: 0 !important; }
      
      /* Prevent page breaks inside items */
      .item, li, p { page-break-inside: avoid; }
