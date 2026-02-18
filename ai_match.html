@@ -619,7 +619,15 @@ function generateTailoredResume() {
   
   const h1 = document.createElement('h1'); h1.innerText = d.name; root.appendChild(h1);
   const info = document.createElement('div'); info.className = 'contact'; 
-  info.innerText = [d.email, d.phone, d.linkedin].filter(Boolean).join(' | '); root.appendChild(info);
+  
+  // Reconstruct Contact Info properly
+  const contactParts = [];
+  if (d.email) contactParts.push(d.email);
+  if (d.phone) contactParts.push(d.phone);
+  if (d.linkedin) contactParts.push(d.linkedin);
+  if (d.portfolio) contactParts.push(d.portfolio);
+  
+  info.innerText = contactParts.join(' | '); root.appendChild(info);
   
   const addSec = (t) => { const h = document.createElement('h3'); h.innerText = t; root.appendChild(h); };
   const addRow = (l, r) => { 
@@ -668,9 +676,32 @@ function generateTailoredResume() {
   if(d.skills.length) {
       addSec('SKILLS');
       const div = document.createElement('div');
+      
+      // Separate skills by category if possible, or just list them
+      // In this simplified view, we will just list them but try to group by name
       d.skills.forEach(s => {
           const isNew = s.name.startsWith('Targeted');
-          div.innerHTML += `<div class="${isNew ? 'highlight-new' : ''}"><b>${s.name}:</b> ${s.level}</div>`;
+          div.innerHTML += `<div class="${isNew ? 'highlight-new' : ''}" style="margin-bottom:4px"><b>${s.name}:</b> ${s.level}</div>`;
+      });
+      root.appendChild(div);
+  }
+
+  // Activities (Preserve original activities)
+  if(d.activities && d.activities.length) {
+      addSec('LEADERSHIP & ACTIVITIES');
+      d.activities.forEach(a => {
+          const row = document.createElement('div'); row.className='row';
+          row.innerHTML = `<span>${a.name} - ${a.role}</span><span>${a.period}</span>`;
+          root.appendChild(row);
+      });
+  }
+
+  // Languages (Preserve original languages)
+  if(d.languages && d.languages.length) {
+      addSec('LANGUAGES');
+      const div = document.createElement('div');
+      d.languages.forEach(l => {
+          div.innerHTML += `<div><b>${l.language}:</b> ${l.proficiency}</div>`;
       });
       root.appendChild(div);
   }
