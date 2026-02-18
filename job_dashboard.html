@@ -76,6 +76,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
             <input type="checkbox" id="visaFilter" style="cursor:pointer;accent-color:#cf222e">
             <label for="visaFilter" style="cursor:pointer;color:#cf222e;font-weight:700" title="Automatically add 'visa sponsorship' to your search">🛂 Visa Only</label>
           </div>
+          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-size:13px;user-select:none;background:#e6f7ff;padding:4px 8px;border-radius:6px;border:1px solid #0969da">
+            <input type="checkbox" id="undergradFilter" style="cursor:pointer;accent-color:#0969da">
+            <label for="undergradFilter" style="cursor:pointer;color:#0969da;font-weight:700" title="Filter for undergraduate/bachelor roles">🎓 Undergrad</label>
+          </div>
         </div>
         
         <div id="quickTags"></div>
@@ -395,11 +399,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 function openSearch(platform){
   let rawK = document.getElementById('keywords').value;
   const visa = document.getElementById('visaFilter').checked;
+  const undergrad = document.getElementById('undergradFilter').checked;
   
   // Smart Visa Filter Logic
   // We append keywords that specifically signal sponsorship support
   if (visa) {
      rawK += ' ("visa sponsorship" OR "h1b" OR "international students")';
+  }
+
+  // Smart Undergrad Filter Logic
+  if (undergrad) {
+     rawK += ' ("Undergraduate" OR "Bachelor" OR "BS" OR "University Student")';
   }
 
   const k = encodeURIComponent(rawK);
