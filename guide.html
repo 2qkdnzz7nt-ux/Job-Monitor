@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Job Search Toolkit - User Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292f;
+            background-color: #f6f8fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 6px;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        h1 {
+            border-bottom: 1px solid #d0d7de;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        h2 {
+            margin-top: 40px;
+            border-bottom: 1px solid #eaeef2;
+            padding-bottom: 8px;
+            font-size: 24px;
+        }
+        h3 {
+            margin-top: 24px;
+            font-size: 18px;
+            color: #0969da;
+        }
+        p, li {
+            font-size: 16px;
+        }
+        code {
+            background-color: #f6f8fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            font-size: 85%;
+        }
+        .btn {
+            display: inline-block;
+            padding: 5px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid rgba(27,31,35,0.15);
+            border-radius: 6px;
+            color: #24292f;
+            background-color: #f6f8fa;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #f3f4f6;
+            text-decoration: none;
+        }
+        .note {
+            background-color: #fff8c5;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            border: 1px solid rgba(212,167,44,0.4);
+        }
+        .tip {
+            background-color: #ddf4ff;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            border: 1px solid rgba(84,174,255,0.4);
+        }
+        img {
+            max-width: 100%;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav-links">
+        <a href="index.html" class="btn">🏠 Home</a>
+        <a href="job_dashboard.html" class="btn">🔍 Job Monitor</a>
+        <a href="resume_form.html" class="btn">📝 Resume Builder</a>
+        <a href="ai_match.html" class="btn">🤖 AI Match</a>
+    </div>
+
+    <h1>📖 User Guide (使用指南)</h1>
+    <p>欢迎使用您的专属求职工具包！这是一个为您量身定制的一站式求职解决方案，集成了职位监控、简历生成和 AI 职位匹配功能。</p>
+
+    <h2>1. 🔍 Job Monitor (职位监控器)</h2>
+    <p>这是您的每日必看页面，帮助您第一时间发现新职位。</p>
+
+    <h3>⚡ One-Click Early Access (一键直达)</h3>
+    <ul>
+        <li><strong>关键词搜索</strong>：默认预设热门关键词，您可以随时修改。</li>
+        <li><strong>🛂 Visa Only</strong>：勾选此项，搜索结果将自动过滤出支持 H1B/Visa Sponsorship 的职位。</li>
+        <li><strong>🎓 Undergrad Only</strong>：勾选此项，精准锁定面向本科生的实习和全职机会。</li>
+        <li><strong>平台直达</strong>：点击下方按钮 (LinkedIn, Indeed, Google Jobs 等)，直接跳转到对应平台的“过去 24 小时”搜索结果页。</li>
+    </ul>
+
+    <h3>🌽 UIUC Exclusive (校内专属)</h3>
+    <p>专门为您整合的 UIUC Research Park 和 Handshake 资源。这些职位竞争主要来自校内，回复率极高，建议每周检查。</p>
+
+    <h3>🕵️‍♂️ Hidden Gem Search (ATS 透视)</h3>
+    <p>利用 Google 高级搜索技巧，直接搜索公司招聘后台 (Greenhouse, Lever, Workday 等)。这能帮您发现那些没有同步到 LinkedIn 的“隐形”职位。</p>
+
+    <div class="tip">
+        <strong>💡 Pro Tip:</strong> 每天早上花 10 分钟快速浏览 One-Click Early Access，每周一和周三重点检查 UIUC Exclusive 和 Hidden Gems。
+    </div>
+
+    <h2>2. 📝 Resume Builder (简历生成器)</h2>
+    <p>一个简单、标准、通过 ATS 测试的简历生成工具。</p>
+
+    <h3>📝 填写简历</h3>
+    <ul>
+        <li><strong>分模块填写</strong>：包括 Education, Experience, Projects, Skills 等。</li>
+        <li><strong>自动格式化</strong>：无需担心排版，系统会自动生成符合美国招聘标准的格式。</li>
+    </ul>
+
+    <h3>💾 保存与加载</h3>
+    <ul>
+        <li><strong>Save to Local</strong>：将当前内容保存到浏览器缓存，下次打开自动加载。</li>
+        <li><strong>Save as Version</strong>：保存为特定版本（如 "Software Engineer", "Data Analyst"），方便针对不同岗位切换。</li>
+    </ul>
+
+    <h3>🖨️ 导出 PDF</h3>
+    <p>点击 "Download PDF" 按钮，系统会调用浏览器的打印功能。请在打印预览中选择 "Save as PDF"。</p>
+    <div class="note">
+        <strong>注意：</strong> 打印设置中，请确保勾选 "Background graphics" (如有背景色)，并取消勾选 "Headers and footers"。
+    </div>
+
+    <h2>3. 🤖 AI Job Match & Tailor (AI 匹配与定制)</h2>
+    <p>虽然目前是模拟 AI (Mock AI)，但它展示了理想的智能化工作流。</p>
+
+    <h3>📊 Daily Top 10 Matches</h3>
+    <p>这里展示了根据您的简历关键词匹配到的每日精选职位。点击 "Tailor Resume" 可以进入定制流程。</p>
+
+    <h3>✨ 定制流程</h3>
+    <ol>
+        <li><strong>Job Description</strong>：粘贴您想申请的职位描述。</li>
+        <li><strong>Select Resume</strong>：选择一份您的基础简历。</li>
+        <li><strong>Auto-Tailor</strong>：点击按钮，系统会模拟生成一份针对该职位的优化简历、Cover Letter 和 Networking Note。</li>
+        <li><strong>Download</strong>：满意后，一键下载优化后的简历 PDF。</li>
+    </ol>
+
+    <h2>4. 🛠️ 建站全过程复盘 (Building Process Summary)</h2>
+    <p>这是一个从 0 到 1 构建现代 Web 应用的完整案例。以下是我们合作开发的全过程总结，供您学习参考。</p>
+
+    <h3>📌 Phase 1: 需求分析 (Requirements Analysis)</h3>
+    <ul>
+        <li><strong>用户画像</strong>：UIUC 国际大一新生，拥有 Python/App 开发基础。</li>
+        <li><strong>核心痛点</strong>：海投效率低、简历针对性差、不懂如何针对性修改简历。</li>
+        <li><strong>解决方案</strong>：打造一个集“职位监控 + 简历生成 + 模拟 AI 匹配”于一体的工具包。</li>
+    </ul>
+
+    <h3>💻 Phase 2: 技术选型 (Tech Stack)</h3>
+    <p>为了保证轻量级、易部署且易于理解，我们采用了最纯粹的前端技术栈 (Vanilla Stack)：</p>
+    <ul>
+        <li><strong>HTML5</strong>：构建页面语义化结构。</li>
+        <li><strong>CSS3</strong>：负责页面样式、布局 (Flexbox) 和打印样式 (@media print)。</li>
+        <li><strong>JavaScript (ES6+)</strong>：处理交互逻辑、DOM 操作、本地存储 (LocalStorage) 和数据模拟。</li>
+        <li><strong>无后端 (Serverless)</strong>：所有数据存储在浏览器端，保护隐私且无需维护服务器。</li>
+    </ul>
+
+    <h3>⚙️ Phase 3: 核心功能实现 (Implementation)</h3>
+    <ul>
+        <li><strong>Job Monitor</strong>：利用 URL 参数拼接技术，构建了一键直达各大招聘平台的搜索链接。通过 JS 动态生成含 "Visa Sponsorship" 和 "Undergrad" 关键词的查询。</li>
+        <li><strong>Resume Builder</strong>：使用 Input/Textarea 收集数据，利用 `localStorage` 实现自动保存。最关键的是通过 CSS `@media print` 规则，将网页内容完美映射为 A4 纸张格式，实现“所见即所得”的 PDF 导出。</li>
+        <li><strong>AI Match (Mock)</strong>：在没有真实后端 AI 的情况下，通过 JavaScript 数组和字符串匹配算法，模拟了“简历打分”和“职位推荐”的过程，展示了理想化的 AI 交互流程。</li>
+    </ul>
+
+    <h3>🔄 Phase 4: 迭代与优化 (Iteration)</h3>
+    <p>开发不仅仅是写代码，更是不断根据反馈进行调整的过程：</p>
+    <ul>
+        <li><strong>Bug 修复</strong>：解决了简历生成为空、下拉菜单默认选项等逻辑错误。</li>
+        <li><strong>体验优化</strong>：调整了打印字体大小、行间距，确保简历刚好一页；增加了 "Undergrad Only" 筛选器。</li>
+        <li><strong>防御性编程</strong>：增加了大量空值检查 (Null Checks)，防止因数据缺失导致的页面报错。</li>
+    </ul>
+
+    <h3>🚀 Phase 5: 部署与交付 (Deployment)</h3>
+    <ul>
+        <li><strong>Git 版本控制</strong>：记录每一次代码变更，方便回溯。</li>
+        <li><strong>Vercel 自动化部署</strong>：将代码推送到 GitHub 后，Vercel 自动构建并更新线上网站，实现了 CI/CD (持续集成/持续部署)。</li>
+    </ul>
+
+    <hr>
+    <p style="text-align: center; color: #57606a; margin-top: 40px;">
+        Designed & Built for You. Good Luck with Your Job Search! 🚀
+    </p>
+</div>
+
+</body>
+</html>
