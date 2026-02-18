@@ -195,6 +195,7 @@
           <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
             <div class="tab active" onclick="switchTab('resume')" id="tabResume">📄 Tailored Resume</div>
             <div class="tab" onclick="switchTab('coverletter')" id="tabCover">✉️ Cover Letter</div>
+            <div class="tab" onclick="switchTab('networking')" id="tabNetworking">🤝 Networking Note</div>
           </div>
           <div id="actionButtons" style="display:flex; gap:8px;">
             <!-- Buttons injected by switchTab -->
@@ -207,6 +208,12 @@
         
         <div id="viewCover" style="padding: 24px; background: #eef2f5; height: calc(100% - 60px); overflow-y: auto; display:none">
           <div id="coverLetterPreview" class="resume-preview" style="white-space: pre-wrap;"></div>
+        </div>
+
+        <div id="viewNetworking" style="padding: 24px; background: #eef2f5; height: calc(100% - 60px); overflow-y: auto; display:none">
+          <div id="networkingPreview" class="resume-preview" style="white-space: pre-wrap;">
+             <div style="color:#57606a;text-align:center;margin-top:40px">Click "Auto-Tailor Resume" to generate networking messages.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -230,6 +237,7 @@ let currentResume = null;
 let currentJob = null;
 let tailoredResumeData = null;
 let tailoredCoverLetterText = "";
+let networkingNoteText = "";
 
 // --- Job Database (Expanded for diverse roles) ---
 const JOB_CATEGORIES = {
@@ -267,6 +275,12 @@ const JOB_CATEGORIES = {
     { title: "Bioinformatics Associate", company: "Genentech", location: "South San Francisco, CA", keywords: ["Python", "R", "NGS", "Genomics", "Biology"], desc: "Analyze genomic data for drug discovery.", sponsor: true },
     { title: "Research Associate", company: "Pfizer", location: "Cambridge, MA", keywords: ["Lab Techniques", "PCR", "Cell Culture", "Data Analysis", "Biology"], desc: "Conduct experiments to support vaccine development.", sponsor: true },
     { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations.", sponsor: false }
+  ],
+  "agtech": [
+    { title: "Precision Ag Intern", company: "John Deere", location: "Champaign, IL", keywords: ["Python", "GIS", "Data Analysis", "IoT", "Sensors"], desc: "Develop software for autonomous tractors and precision agriculture.", sponsor: true },
+    { title: "R&D Intern", company: "Bayer Crop Science", location: "St. Louis, MO", keywords: ["Genetics", "R", "Statistics", "Field Research", "Biology"], desc: "Support breeding pipelines and genomic research.", sponsor: true },
+    { title: "Digital Ag Intern", company: "Corteva", location: "Johnston, IA", keywords: ["Remote Sensing", "Machine Learning", "Python", "Satellite Imagery"], desc: "Analyze satellite data to optimize crop yields.", sponsor: true },
+    { title: "Ag Engineering Intern", company: "ADM", location: "Decatur, IL", keywords: ["Process Engineering", "AutoCAD", "Manufacturing", "Supply Chain"], desc: "Optimize food processing facilities.", sponsor: true }
   ]
 };
 
@@ -275,7 +289,8 @@ const KEYWORD_MAPPING = {
   "business": ["business", "management", "finance", "consulting", "sales", "strategy", "operations", "economics", "accounting", "admin", "hr", "analyst", "project management", "entrepreneurship", "commerce"],
   "design": ["design", "ui", "ux", "graphic", "adobe", "figma", "sketch", "creative", "art", "visual", "multimedia", "animation", "illustration"],
   "engineering": ["software", "developer", "engineer", "coding", "programming", "java", "python", "c++", "react", "computer", "tech", "data", "aws", "cloud", "full stack", "backend", "frontend", "cs"],
-  "science": ["biology", "chemistry", "lab", "research", "science", "genetics", "bioinformatics", "pharmaceutical", "medical", "clinical", "physics", "neuroscience", "biotech", "ag"]
+  "science": ["biology", "chemistry", "lab", "research", "science", "genetics", "bioinformatics", "pharmaceutical", "medical", "clinical", "physics", "neuroscience", "biotech"],
+  "agtech": ["ag", "agriculture", "agricultural", "crop", "farm", "soil", "food science", "nutrition", "sustainability", "environmental", "jhon deere", "bayer", "corteva"]
 };
 
 let MOCK_JOBS = []; // Will be populated dynamically
@@ -375,7 +390,8 @@ function analyzeResumeAndRenderJobs() {
       if (combined.includes('art') || combined.includes('design')) topCategory = 'design';
       else if (combined.includes('business') || combined.includes('finance') || combined.includes('econ') || combined.includes('mba') || combined.includes('commerce')) topCategory = 'business';
       else if (combined.includes('market') || combined.includes('comm') || combined.includes('public relation') || combined.includes('media') || combined.includes('advertising')) topCategory = 'marketing';
-      else if (combined.includes('bio') || combined.includes('chem') || combined.includes('sci') || combined.includes('physics') || combined.includes('ag')) topCategory = 'science';
+      else if (combined.includes('ag') || combined.includes('crop') || combined.includes('food') || combined.includes('env')) topCategory = 'agtech';
+      else if (combined.includes('bio') || combined.includes('chem') || combined.includes('sci') || combined.includes('physics')) topCategory = 'science';
       else if (combined.includes('eng') || combined.includes('cs') || combined.includes('comp') || combined.includes('tech')) topCategory = 'engineering';
   }
 
@@ -563,7 +579,7 @@ async function runTailoring() {
   sub.innerText = 'Injecting missing keywords: ' + document.getElementById('missingKeywords').innerText;
   await new Promise(r => setTimeout(r, 1200));
   
-  txt.innerText = 'Drafting Cover Letter...';
+  txt.innerText = 'Drafting Cover Letter & Networking Note...';
   sub.innerText = 'Personalizing for ' + currentJob.company;
   await new Promise(r => setTimeout(r, 1000));
   
@@ -571,6 +587,7 @@ async function runTailoring() {
   
   generateTailoredResume();
   generateCoverLetter();
+  generateNetworkingNote();
 }
 
 function generateTailoredResume() {
@@ -688,6 +705,36 @@ ${d.name}
   updateActionButtons();
 }
 
+function generateNetworkingNote() {
+  const d = currentResume;
+  const j = currentJob;
+  
+  // Extract a key project or skill to make it specific
+  const keySkill = j.keywords[0] || "Python";
+  const university = d.edu[0]?.school || "UIUC";
+  const major = d.edu[0]?.major || "Engineering";
+
+  const text = `
+SUBJECT: Student Inquiry: ${j.title} role - ${d.name}
+
+Hi [Hiring Manager Name/Alumni],
+
+I recently came across the ${j.title} position at ${j.company} and was immediately drawn to your team's work in [mention a specific product/mission].
+
+As a ${major} student at ${university} with experience in ${keySkill}, I believe my background aligns well with the team's needs. I recently completed a project where I [mention a relevant achievement using ${keySkill}], which I think would be relevant to the work at ${j.company}.
+
+I would appreciate the opportunity to briefly connect and learn more about your team's current challenges. Are you open to a 10-minute chat next week?
+
+Best regards,
+
+${d.name}
+[Link to Portfolio/LinkedIn]
+  `;
+
+  document.getElementById('networkingPreview').innerText = text.trim();
+  networkingNoteText = text.trim();
+}
+
 function updateActionButtons() {
   const container = document.getElementById('actionButtons');
   container.innerHTML = '';
@@ -695,16 +742,22 @@ function updateActionButtons() {
   if (!tailoredResumeData) return;
   
   const isResume = document.getElementById('tabResume').classList.contains('active');
+  const isCover = document.getElementById('tabCover').classList.contains('active');
   
   if (isResume) {
      container.innerHTML = `
        <button class="btn" onclick="saveToHistory()">💾 Save to History</button>
        <button class="btn primary" onclick="printContent('tailoredResumePreview')">📥 Download PDF</button>
      `;
-   } else {
+   } else if (isCover) {
      container.innerHTML = `
-       <button class="btn" onclick="copyText()">📋 Copy Text</button>
+       <button class="btn" onclick="copyText(tailoredCoverLetterText)">📋 Copy Text</button>
        <button class="btn primary" onclick="printContent('coverLetterPreview')">📥 Download PDF</button>
+     `;
+   } else {
+     // Networking
+     container.innerHTML = `
+       <button class="btn primary" onclick="copyText(networkingNoteText)">📋 Copy Message</button>
      `;
    }
 }
@@ -738,22 +791,28 @@ function printContent(elementId) {
   content.id = originalId;
 }
 
-function copyText() {
-  navigator.clipboard.writeText(tailoredCoverLetterText).then(() => {
-    alert('Cover Letter copied to clipboard!');
+function copyText(text) {
+  const txt = text || tailoredCoverLetterText;
+  navigator.clipboard.writeText(txt).then(() => {
+    alert('Content copied to clipboard!');
   });
 }
 
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('viewResume').style.display = 'none';
+  document.getElementById('viewCover').style.display = 'none';
+  document.getElementById('viewNetworking').style.display = 'none';
+
   if (tab === 'resume') {
     document.getElementById('tabResume').classList.add('active');
     document.getElementById('viewResume').style.display = 'block';
-    document.getElementById('viewCover').style.display = 'none';
-  } else {
+  } else if (tab === 'coverletter') {
     document.getElementById('tabCover').classList.add('active');
-    document.getElementById('viewResume').style.display = 'none';
     document.getElementById('viewCover').style.display = 'block';
+  } else {
+    document.getElementById('tabNetworking').classList.add('active');
+    document.getElementById('viewNetworking').style.display = 'block';
   }
   updateActionButtons();
 }
