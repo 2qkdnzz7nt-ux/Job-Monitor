@@ -303,50 +303,10 @@ let MOCK_JOBS = []; // Will be populated dynamically
 
 // --- Initialization ---
 document.getElementById('todayDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-loadResumeVersions();
-// renderJobs() is now called inside loadSelectedResume -> analyzeResumeAndRenderJobs
+// loadResumeVersions will be called at the end of the script
 
 // --- Functions ---
-function loadResumeVersions() {
-  try {
-    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
-    const sel = document.getElementById('resumeSelector');
-    if (versions.length === 0) {
-      const opt = document.createElement('option');
-      opt.text = "No resumes found. Create one in Builder!";
-      sel.add(opt);
-      sel.disabled = true;
-      return;
-    }
-    versions.forEach((v, index) => {
-      const opt = document.createElement('option');
-      opt.value = index;
-      opt.text = `${v.name} (${new Date(v.createdAt).toLocaleDateString()})`;
-      sel.add(opt);
-    });
-    // Select first one by default
-    sel.selectedIndex = 0; // Changed to 0 (first item)
-    loadSelectedResume();
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function loadSelectedResume() {
-  const idx = document.getElementById('resumeSelector').value;
-  if (idx === "") return;
-  const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
-  currentResume = versions[idx].data;
-  
-  // Reset view
-  document.getElementById('workspace').style.display = 'none';
-  document.getElementById('emptyState').style.display = 'block';
-  document.getElementById('tailorBtn').disabled = true;
-  document.querySelectorAll('.job-item').forEach(el => el.classList.remove('active'));
-
-  // Analyze and Render Jobs
-  analyzeResumeAndRenderJobs();
-}
+// (Redundant functions removed)
 
 function analyzeResumeAndRenderJobs() {
   if (!currentResume) return;
@@ -591,6 +551,9 @@ function analyzeMatch() {
 }
 
 async function runTailoring() {
+  if (!currentResume) { alert("Please select a resume version first."); return; }
+  if (!currentJob) { alert("Please select a job first."); return; }
+
   const overlay = document.getElementById('loadingOverlay');
   const txt = document.getElementById('loadingText');
   const sub = document.getElementById('loadingSub');
@@ -617,194 +580,140 @@ async function runTailoring() {
 }
 
 function generateTailoredResume() {
-  if (!currentResume || !currentJob) return;
+  try {
+    if (!currentResume) {
+        alert("Error: No resume selected. Please select a resume from the dropdown.");
+        return;
+    }
+    if (!currentJob) {
+        alert("Error: No job selected. Please select a job from the list.");
+        return;
+    }
 
-  // Deep copy resume
-  const d = JSON.parse(JSON.stringify(currentResume));
-  
-  // Ensure arrays exist to prevent crashes
-  d.edu = d.edu || [];
-  d.exps = d.exps || [];
-  d.projects = d.projects || [];
-  d.activities = d.activities || [];
-  d.skills = d.skills || [];
+    console.log("Generating tailored resume for:", currentJob.company);
 
-  const missing = [];
-  if (currentJob.keywords) {
-    currentJob.keywords.forEach(k => {
-       if (!JSON.stringify(d).toLowerCase().includes(k.toLowerCase())) missing.push(k);
-    });
-  }
-  
-  // Inject keywords into Skills (Mock Tailoring)
-  if (missing.length > 0) {
-     // Create a visible string for the skills
-     const newSkillName = `Targeted Skills for ${currentJob.company}: ${missing.join(', ')}`;
-     d.skills.unshift({ name: newSkillName, level: "Targeted" });
-  }
-  
-  tailoredResumeData = d;
-  
-  // Render Resume - STRICTLY following resume_form.html structure
-  const root = document.getElementById('tailoredResumePreview');
-  if (!root) return;
-  root.innerHTML = '';
-  
-  // Helper for Elements
-  const el = (tag, cls) => {
-      const e = document.createElement(tag);
-      if(cls) e.className = cls;
-      return e;
-  };
+    // Deep copy resume
+    const d = JSON.parse(JSON.stringify(currentResume));
+    
+    // Ensure arrays exist to prevent crashes
+    d.edu = d.edu || [];
+    d.exps = d.exps || [];
+    d.projects = d.projects || [];
+    d.activities = d.activities || [];
+    d.skills = d.skills || [];
 
-  // 1. Header
-  const h1 = el('h1'); 
-  h1.innerText = d.name || 'YOUR NAME'; 
-  root.appendChild(h1);
-  
-  const info = el('div', 'contact-info'); 
-  const contactParts = [];
-  if (d.phone) contactParts.push(d.phone);
-  if (d.email) contactParts.push(d.email);
-  if (d.linkedin) contactParts.push(d.linkedin);
-  if (d.github) contactParts.push(d.github);
-  if (d.website) contactParts.push(d.website);
-  
-  info.innerText = contactParts.join(' | '); 
-  root.appendChild(info);
-  
-  // Helper for Sections
-  const addSec = (t) => { 
-      const h = el('h3'); 
-      h.innerText = t; 
-      root.appendChild(h); 
-  };
-  
-  // Helper for Rows (Left/Right align) matching resume_form.html
-  const addRow = (l, r, bold = false, italic = false) => { 
-     const row = el('div', 'resume-row');
-     if(bold) row.classList.add('resume-bold');
-     if(italic) row.classList.add('resume-italic');
-     
-     const left = el('span'); left.innerText = l; row.appendChild(left);
-     const right = el('span'); right.innerText = r; row.appendChild(right);
-     root.appendChild(row);
-  };
-  
-  // 2. EDUCATION
-  if(d.edu && d.edu.length) { 
-      addSec('EDUCATION'); 
-      d.edu.forEach(e => {
-          // Line 1: School - Location (Bold)
-          addRow(e.school || '', e.city || '', true, false);
-          // Line 2: Degree/Major - Period (Italic)
-          const degreeInfo = [e.degree, e.major].filter(Boolean).join(', ');
-          addRow(degreeInfo, e.period || '', false, true);
-          // GPA
-          if(e.gpa) {
-             const gpaDiv = el('div', 'resume-sub');
-             gpaDiv.innerText = `GPA: ${e.gpa}`;
-             root.appendChild(gpaDiv);
-          }
+    const missing = [];
+    if (currentJob.keywords) {
+      currentJob.keywords.forEach(k => {
+         if (!JSON.stringify(d).toLowerCase().includes(k.toLowerCase())) missing.push(k);
       });
-      // Relevant Courses (Global field in data)
-      if (d.courses) {
-          const coursesDiv = el('div', 'resume-sub');
-          coursesDiv.style.marginTop = '2px';
-          coursesDiv.innerHTML = `<strong>Relevant Courses:</strong> ${d.courses}`;
-          root.appendChild(coursesDiv);
-      }
-  }
-  
-  // 3. PROFESSIONAL EXPERIENCE
-  if(d.exps && d.exps.length) { 
-    addSec('PROFESSIONAL EXPERIENCE'); 
-    d.exps.forEach((e, i) => {
-        // Line 1: Company - Location (Bold)
-        addRow(e.company || '', e.location || '', true, false);
-        // Line 2: Title - Period (Italic)
-        addRow(e.title || '', e.period || '', false, true);
-        
-        if (e.desc) {
-            const ul = el('ul');
-            let descText = e.desc;
-            
-            // Tailoring: Add a sentence to the first experience if it's relevant
-            if (i === 0 && missing.length > 0) {
-                 descText = `Applied ${missing[0]} techniques to optimize workflows, aligning with ${currentJob.company} standards.\n` + descText;
-            }
+    }
+    
+    // Inject keywords into Skills (Mock Tailoring)
+    if (missing.length > 0) {
+       // Create a visible string for the skills
+       const newSkillName = `Targeted Skills for ${currentJob.company}: ${missing.join(', ')}`;
+       d.skills.unshift({ name: newSkillName, level: "Targeted" });
+    }
+    
+    tailoredResumeData = d;
+    
+    // Render Resume - STRICTLY following resume_form.html structure
+    const root = document.getElementById('tailoredResumePreview');
+    if (!root) return;
+    root.innerHTML = '';
+    
+    // Helper for Elements
+    const el = (tag, cls) => {
+        const e = document.createElement(tag);
+        if(cls) e.className = cls;
+        return e;
+    };
 
-            descText.split('\n').forEach(li => { 
-                if(li.trim()) {
-                    const item = el('li');
-                    // Highlight the new tailored line
-                    if (li.includes(missing[0]) && li.includes(currentJob.company)) {
-                        item.className = 'highlight-new';
-                    }
-                    item.innerText = li.replace(/^- /, '');
-                    ul.appendChild(item);
-                }
-            });
-            root.appendChild(ul);
-        }
-    });
-  }
-  
-  // 4. PROJECTS & OUTSIDE EXPERIENCE
-  if(d.projects && d.projects.length) {
-    addSec('PROJECTS & OUTSIDE EXPERIENCE');
-    d.projects.forEach((p, i) => {
-        // Line 1: Name - Location (Bold)
-        addRow(p.name || '', p.location || '', true, false);
-        // Line 2: Title - Period (Italic)
-        addRow(p.title || '', p.period || '', false, true);
-        
-        // Line 3: Stack | Link (Italic)
-        let subStack = p.stack || '';
-        if(p.link) subStack += (subStack ? ` | ${p.link}` : p.link);
-        
-        if(subStack) {
-            const row = el('div', 'resume-row');
-            const left = el('span'); 
-            left.innerHTML = `<em>${subStack}</em>`; 
-            row.appendChild(left);
-            root.appendChild(row);
-        }
-        
-        const ul = el('ul');
-        let desc = p.desc || '';
-        // Mock injection for first project
-        if (i === 0 && missing.length > 0) {
-            desc += `\n- Integrated ${missing.slice(0, 2).join(' and ')} to enhance project scalability.`;
-        }
-        
-        desc.split('\n').forEach(li => { 
-            if(li.trim()) {
-                const isNew = li.includes('Integrated') && li.includes('scalability');
-                const item = el('li');
-                if(isNew) item.className = 'highlight-new';
-                item.innerText = li.replace(/^- /, '');
-                ul.appendChild(item);
+    // 1. Header
+    const h1 = el('h1'); 
+    h1.innerText = d.name || 'YOUR NAME'; 
+    root.appendChild(h1);
+    
+    const info = el('div', 'contact-info'); 
+    const contactParts = [];
+    if (d.phone) contactParts.push(d.phone);
+    if (d.email) contactParts.push(d.email);
+    if (d.linkedin) contactParts.push(d.linkedin);
+    if (d.github) contactParts.push(d.github);
+    if (d.website) contactParts.push(d.website);
+    
+    info.innerText = contactParts.join(' | '); 
+    root.appendChild(info);
+    
+    // Helper for Sections
+    const addSec = (t) => { 
+        const h = el('h3'); 
+        h.innerText = t; 
+        root.appendChild(h); 
+    };
+    
+    // Helper for Rows (Left/Right align) matching resume_form.html
+    const addRow = (l, r, bold = false, italic = false) => { 
+       const row = el('div', 'resume-row');
+       if(bold) row.classList.add('resume-bold');
+       if(italic) row.classList.add('resume-italic');
+       
+       const left = el('span'); left.innerText = l; row.appendChild(left);
+       const right = el('span'); right.innerText = r; row.appendChild(right);
+       root.appendChild(row);
+    };
+    
+    // 2. EDUCATION
+    if(d.edu && d.edu.length) { 
+        addSec('EDUCATION'); 
+        d.edu.forEach(e => {
+            // Line 1: School - Location (Bold)
+            addRow(e.school || '', e.city || '', true, false);
+            // Line 2: Degree/Major - Period (Italic)
+            const degreeInfo = [e.degree, e.major].filter(Boolean).join(', ');
+            addRow(degreeInfo, e.period || '', false, true);
+            // GPA
+            if(e.gpa) {
+               const gpaDiv = el('div', 'resume-sub');
+               gpaDiv.innerText = `GPA: ${e.gpa}`;
+               root.appendChild(gpaDiv);
             }
         });
-        root.appendChild(ul);
-    });
-  }
-  
-  // 5. ACTIVITIES & LEADERSHIP
-  if(d.activities && d.activities.length) {
-      addSec('ACTIVITIES & LEADERSHIP');
-      d.activities.forEach(a => {
-          // Line 1: Org - Location (Bold)
-          addRow(a.org || '', a.location || '', true, false);
-          // Line 2: Role - Period (Italic)
-          addRow(a.role || '', a.period || '', false, true);
+        // Relevant Courses (Global field in data)
+        if (d.courses) {
+            const coursesDiv = el('div', 'resume-sub');
+            coursesDiv.style.marginTop = '2px';
+            coursesDiv.innerHTML = `<strong>Relevant Courses:</strong> ${d.courses}`;
+            root.appendChild(coursesDiv);
+        }
+    }
+    
+    // 3. PROFESSIONAL EXPERIENCE
+    if(d.exps && d.exps.length) { 
+      addSec('PROFESSIONAL EXPERIENCE'); 
+      d.exps.forEach((e, i) => {
+          // Line 1: Company - Location (Bold)
+          addRow(e.company || '', e.location || '', true, false);
+          // Line 2: Title - Period (Italic)
+          addRow(e.title || '', e.period || '', false, true);
           
-          if (a.desc) {
+          if (e.desc) {
               const ul = el('ul');
-              a.desc.split('\n').forEach(li => {
+              let descText = e.desc;
+              
+              // Tailoring: Add a sentence to the first experience if it's relevant
+              if (i === 0 && missing.length > 0) {
+                   descText = `Applied ${missing[0]} techniques to optimize workflows, aligning with ${currentJob.company} standards.\n` + descText;
+              }
+
+              descText.split('\n').forEach(li => { 
                   if(li.trim()) {
                       const item = el('li');
+                      // Highlight the new tailored line
+                      if (li.includes(missing[0]) && li.includes(currentJob.company)) {
+                          item.className = 'highlight-new';
+                      }
                       item.innerText = li.replace(/^- /, '');
                       ul.appendChild(item);
                   }
@@ -812,64 +721,145 @@ function generateTailoredResume() {
               root.appendChild(ul);
           }
       });
-  }
-  
-  // 6. SKILLS & INTERESTS
-  if((d.skills && d.skills.length) || d.languages || d.interests) {
-      addSec('SKILLS & INTERESTS');
-      const div = el('div', 'resume-sub');
-      
-      // Skills
-      if (d.skills && d.skills.length) {
-          const row = el('div');
-          // Map skills to text, highlighting the targeted ones
-          const skillsHtml = d.skills.map(s => {
-             const text = s.name; // resume_form.html only uses name
-             const isNew = text.startsWith('Targeted Skills');
-             return isNew ? `<span class="highlight-new">${text}</span>` : text;
-          }).join(', ');
+    }
+    
+    // 4. PROJECTS & OUTSIDE EXPERIENCE
+    if(d.projects && d.projects.length) {
+      addSec('PROJECTS & OUTSIDE EXPERIENCE');
+      d.projects.forEach((p, i) => {
+          // Line 1: Name - Location (Bold)
+          addRow(p.name || '', p.location || '', true, false);
+          // Line 2: Title - Period (Italic)
+          addRow(p.title || '', p.period || '', false, true);
           
-          row.innerHTML = `<strong>Skills:</strong> ${skillsHtml}`;
-          div.appendChild(row);
-      }
-      
-      // Interests
-      if (d.interests) {
-           const row = el('div');
-           row.innerHTML = `<strong>Interests:</strong> ${d.interests}`;
-           div.appendChild(row);
-      }
-      
-      // Languages
-      if (d.languages) {
-           const row = el('div');
-           row.innerHTML = `<strong>Languages:</strong> ${d.languages}`;
-           div.appendChild(row);
-      }
-      
-      root.appendChild(div);
+          // Line 3: Stack | Link (Italic)
+          let subStack = p.stack || '';
+          if(p.link) subStack += (subStack ? ` | ${p.link}` : p.link);
+          
+          if(subStack) {
+              const row = el('div', 'resume-row');
+              const left = el('span'); 
+              left.innerHTML = `<em>${subStack}</em>`; 
+              row.appendChild(left);
+              root.appendChild(row);
+          }
+          
+          const ul = el('ul');
+          let desc = p.desc || '';
+          // Mock injection for first project
+          if (i === 0 && missing.length > 0) {
+              desc += `\n- Integrated ${missing.slice(0, 2).join(' and ')} to enhance project scalability.`;
+          }
+          
+          desc.split('\n').forEach(li => { 
+              if(li.trim()) {
+                  const isNew = li.includes('Integrated') && li.includes('scalability');
+                  const item = el('li');
+                  if(isNew) item.className = 'highlight-new';
+                  item.innerText = li.replace(/^- /, '');
+                  ul.appendChild(item);
+              }
+          });
+          root.appendChild(ul);
+      });
+    }
+    
+    // 5. ACTIVITIES & LEADERSHIP
+    if(d.activities && d.activities.length) {
+        addSec('ACTIVITIES & LEADERSHIP');
+        d.activities.forEach(a => {
+            // Line 1: Org - Location (Bold)
+            addRow(a.org || '', a.location || '', true, false);
+            // Line 2: Role - Period (Italic)
+            addRow(a.role || '', a.period || '', false, true);
+            
+            if (a.desc) {
+                const ul = el('ul');
+                a.desc.split('\n').forEach(li => {
+                    if(li.trim()) {
+                        const item = el('li');
+                        item.innerText = li.replace(/^- /, '');
+                        ul.appendChild(item);
+                    }
+                });
+                root.appendChild(ul);
+            }
+        });
+    }
+    
+    // 6. SKILLS & INTERESTS
+    if((d.skills && d.skills.length) || d.languages || d.interests) {
+        addSec('SKILLS & INTERESTS');
+        const div = el('div', 'resume-sub');
+        
+        // Skills
+        if (d.skills && d.skills.length) {
+            const row = el('div');
+            // Map skills to text, highlighting the targeted ones
+            const skillsHtml = d.skills.map(s => {
+               const text = s.name; // resume_form.html only uses name
+               const isNew = text.startsWith('Targeted Skills');
+               return isNew ? `<span class="highlight-new">${text}</span>` : text;
+            }).join(', ');
+            
+            row.innerHTML = `<strong>Skills:</strong> ${skillsHtml}`;
+            div.appendChild(row);
+        }
+        
+        // Interests
+        if (d.interests) {
+             const row = el('div');
+             row.innerHTML = `<strong>Interests:</strong> ${d.interests}`;
+             div.appendChild(row);
+        }
+        
+        // Languages
+        if (d.languages) {
+             const row = el('div');
+             row.innerHTML = `<strong>Languages:</strong> ${d.languages}`;
+             div.appendChild(row);
+        }
+        
+        root.appendChild(div);
+    }
+    
+    updateActionButtons();
+  } catch (err) {
+      console.error("Resume Generation Error:", err);
+      alert("An error occurred while generating the resume. Please check console for details.");
   }
 }
 
 function generateCoverLetter() {
-  const d = currentResume;
-  const j = currentJob;
-  if (!d || !j) return; // Safety check
+  console.log("Starting Cover Letter Generation...");
+  try {
+    const d = currentResume;
+    const j = currentJob;
+    if (!d) { 
+        console.error("Missing Resume Data"); 
+        alert("Error: Resume data is missing. Please select a resume.");
+        return; 
+    }
+    if (!j) { 
+        console.error("Missing Job Data"); 
+        alert("Error: Job data is missing. Please select a job.");
+        return; 
+    }
 
-  const today = new Date().toLocaleDateString();
-  
-  // Safe accessors
-  const school = (d.edu && d.edu[0] && d.edu[0].school) ? d.edu[0].school : 'my university';
-  const major = (d.edu && d.edu[0] && d.edu[0].major) ? d.edu[0].major : 'my field';
-  const skill = (d.skills && d.skills[0] && d.skills[0].name) ? d.skills[0].name : 'technical skills';
-  const prevComp = (d.exps && d.exps[0] && d.exps[0].company) ? d.exps[0].company : 'previous projects';
-  
-  // Job keywords safety
-  const jobKeywords = j.keywords && j.keywords.length ? j.keywords : ['relevant skills'];
-  const topSkill = jobKeywords[0];
-  const top3Skills = jobKeywords.slice(0, 3).join(', ');
+    const today = new Date().toLocaleDateString();
+    
+    // Safe accessors with defaults
+    const school = (d.edu && Array.isArray(d.edu) && d.edu[0] && d.edu[0].school) ? d.edu[0].school : '[University Name]';
+    const major = (d.edu && Array.isArray(d.edu) && d.edu[0] && d.edu[0].major) ? d.edu[0].major : '[Major]';
+    const skill = (d.skills && Array.isArray(d.skills) && d.skills[0] && d.skills[0].name) ? d.skills[0].name : '[Top Skill]';
+    const prevComp = (d.exps && Array.isArray(d.exps) && d.exps[0] && d.exps[0].company) ? d.exps[0].company : '[Previous Company]';
+    
+    // Job keywords safety
+    const jobKeywords = (j.keywords && Array.isArray(j.keywords) && j.keywords.length) ? j.keywords : ['relevant skills'];
+    const topSkill = jobKeywords[0];
+    const top3Skills = jobKeywords.slice(0, 3).join(', ');
 
-  const text = `
+    const text = `
 ${d.name || 'Applicant Name'}
 ${d.email || ''} | ${d.phone || ''}
 
@@ -892,27 +882,48 @@ Thank you for considering my application. I look forward to the possibility of d
 Sincerely,
 
 ${d.name || 'Applicant Name'}
-  `;
-  
-  const el = document.getElementById('coverLetterPreview');
-  if (el) el.innerText = text.trim();
-  tailoredCoverLetterText = text.trim();
-  
-  // Update Buttons
-  updateActionButtons();
+    `;
+    
+    const el = document.getElementById('coverLetterPreview');
+    if (el) {
+        el.innerText = text.trim();
+        console.log("Cover Letter Updated successfully");
+    } else {
+        console.error("Cover Letter Element Not Found (ID: coverLetterPreview)");
+        alert("Error: Cover Letter preview element not found.");
+    }
+    tailoredCoverLetterText = text.trim();
+    
+    updateActionButtons();
+  } catch (err) {
+      console.error("Cover Letter Error:", err);
+      alert("Error generating Cover Letter: " + err.message);
+  }
 }
 
 function generateNetworkingNote() {
-  const d = currentResume;
-  const j = currentJob;
-  if (!d || !j) return;
+  console.log("Starting Networking Note Generation...");
+  try {
+    const d = currentResume;
+    const j = currentJob;
+    
+    if (!d) {
+        console.error("Networking Note: Missing Resume");
+        alert("Error: Resume data missing for Networking Note.");
+        return;
+    }
+    if (!j) {
+        console.error("Networking Note: Missing Job");
+        alert("Error: Job data missing for Networking Note.");
+        return;
+    }
 
-  // Extract a key project or skill to make it specific
-  const keySkill = (j.keywords && j.keywords[0]) ? j.keywords[0] : "relevant skills";
-  const university = (d.edu && d.edu[0] && d.edu[0].school) ? d.edu[0].school : "my university";
-  const major = (d.edu && d.edu[0] && d.edu[0].major) ? d.edu[0].major : "my field";
+    // Extract a key project or skill to make it specific
+    const keySkill = (j.keywords && j.keywords[0]) ? j.keywords[0] : "relevant skills";
+    const university = (d.edu && Array.isArray(d.edu) && d.edu[0] && d.edu[0].school) ? d.edu[0].school : "[University]";
+    const major = (d.edu && Array.isArray(d.edu) && d.edu[0] && d.edu[0].major) ? d.edu[0].major : "[Major]";
 
-  const text = `
+    const text = `
 SUBJECT: Student Inquiry: ${j.title} role - ${d.name || 'Student'}
 
 Hi [Hiring Manager Name/Alumni],
@@ -927,11 +938,23 @@ Best regards,
 
 ${d.name || 'Student'}
 [Link to Portfolio/LinkedIn]
-  `;
+    `;
 
-  const el = document.getElementById('networkingPreview');
-  if (el) el.innerText = text.trim();
-  networkingNoteText = text.trim();
+    const el = document.getElementById('networkingPreview');
+    if (el) {
+        el.innerText = text.trim();
+        console.log("Networking Note Updated successfully");
+    } else {
+        console.error("Networking Note Element Not Found (ID: networkingPreview)");
+        alert("Error: Networking Note preview element not found.");
+    }
+    networkingNoteText = text.trim();
+    
+    updateActionButtons();
+  } catch (err) {
+      console.error("Networking Note Error:", err);
+      alert("Error generating Networking Note: " + err.message);
+  }
 }
 
 function updateActionButtons() {
@@ -991,7 +1014,7 @@ function printContent(elementId) {
 }
 
 function copyText(text) {
-  const txt = text || tailoredCoverLetterText;
+  const txt = (typeof text === 'string') ? text : tailoredCoverLetterText;
   navigator.clipboard.writeText(txt).then(() => {
     alert('Content copied to clipboard!');
   });
@@ -1015,6 +1038,95 @@ function switchTab(tab) {
   }
   updateActionButtons();
 }
+
+// Initialize
+const MOCK_RESUME_DATA = {
+  name: "Michael Scott",
+  email: "michael@dundermifflin.com",
+  phone: "570-555-1234",
+  edu: [{ school: "University of Scranton", degree: "B.A.", major: "Business", city: "Scranton, PA", period: "1984" }],
+  exps: [{ company: "Dunder Mifflin", title: "Regional Manager", location: "Scranton, PA", period: "2005 - 2011", desc: "- Managed branch operations and sales team.\n- Organized diversity training and fun run events." }],
+  skills: [{ name: "Sales", level: "Advanced" }, { name: "Management", level: "Expert" }]
+};
+
+function loadResumeVersions() {
+  const selector = document.getElementById('resumeSelector');
+  selector.innerHTML = '<option value="">Select Resume Version...</option>';
+  
+  let hasResume = false;
+  try {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    if (versions.length > 0) {
+        hasResume = true;
+        versions.forEach((v, index) => {
+          const opt = document.createElement('option');
+          opt.value = index; 
+          opt.innerText = v.name || `Resume ${index + 1}`;
+          selector.appendChild(opt);
+        });
+        
+        // Auto-select first resume
+        selector.value = 0;
+        loadSelectedResume();
+    }
+  } catch (e) {
+    console.error("Error loading resume versions:", e);
+  }
+
+  // Add Demo Option if no resume found (or always, for testing)
+  if (!hasResume) {
+      const opt = document.createElement('option');
+      opt.value = "demo";
+      opt.innerText = "📄 Demo Resume (Michael Scott)";
+      selector.appendChild(opt);
+      // Auto-select demo
+      selector.value = "demo";
+      loadSelectedResume();
+  }
+}
+
+function loadSelectedResume() {
+  const selector = document.getElementById('resumeSelector');
+  const index = selector.value;
+  
+  console.log("Loading resume index:", index);
+
+  if (index === "") {
+    currentResume = null;
+    resetAnalysisUI();
+    return;
+  }
+  
+  if (index === "demo") {
+      currentResume = MOCK_RESUME_DATA;
+      console.log("Loaded Demo Resume");
+      if (currentJob) analyzeMatch();
+      return;
+  }
+  
+  try {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    if (versions[index]) {
+      currentResume = versions[index].data;
+      console.log("Loaded Resume:", currentResume.name);
+      if (currentJob) {
+          analyzeMatch();
+      }
+    }
+  } catch (e) {
+    console.error("Error loading selected resume:", e);
+    alert("Error loading resume data. Please try saving your resume again.");
+  }
+}
+
+function resetAnalysisUI() {
+    document.getElementById('scoreValue').innerText = '0%';
+    document.getElementById('scoreBar').style.width = '0%';
+    document.getElementById('missingKeywords').innerHTML = '';
+    document.getElementById('matchedKeywords').innerHTML = '';
+}
+
+loadResumeVersions();
 </script>
 
 </body>
