@@ -66,15 +66,16 @@
   .tab { padding: 8px 16px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; font-size: 14px; color: #57606a; }
   .tab.active { background: #fff; border-color: #d0d7de; border-bottom-color: #fff; font-weight: 600; color: #24292f; margin-bottom: -1px; }
   
-  .resume-preview { font-family: "Times New Roman", serif; padding: 40px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; min-height: 800px; font-size: 14px; line-height: 1.4; }
-  .resume-preview h1 { font-size: 24px; text-align: center; text-transform: uppercase; margin-bottom: 4px; }
-  .resume-preview .contact { text-align: center; font-size: 12px; margin-bottom: 20px; }
-  .resume-preview h3 { border-bottom: 1px solid #000; font-size: 14px; text-transform: uppercase; margin: 16px 0 8px; padding-bottom: 2px; }
-  .resume-preview .item { margin-bottom: 8px; }
-  .resume-preview .row { display: flex; justify-content: space-between; font-weight: bold; }
-  .resume-preview .sub { font-style: italic; font-size: 13px; }
-  .resume-preview ul { margin: 4px 0 0 20px; padding: 0; }
-  .resume-preview li { margin-bottom: 2px; }
+  .resume-preview { font-family: "Times New Roman", serif; padding: 40px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; min-height: 800px; font-size: 11pt; line-height: 1.25; color: #000; }
+  .resume-preview h1 { font-size: 20pt; margin: 0 0 6px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+  .resume-preview .contact-info { text-align: center; margin-bottom: 16px; font-size: 10pt; }
+  .resume-preview h3 { text-transform: uppercase; font-size: 11pt; margin: 14px 0 6px; border-bottom: 1px solid #000; padding-bottom: 2px; letter-spacing: 0.5px; font-weight: bold; }
+  .resume-preview ul { margin: 2px 0 0 32px; padding: 0; }
+  .resume-preview li { margin: 1px 0; font-size: 10pt; }
+  .resume-preview .resume-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .resume-preview .resume-bold { font-weight: bold; }
+  .resume-preview .resume-italic { font-style: italic; }
+  .resume-preview .resume-sub { margin-bottom: 2px; font-size: 10pt; }
   
   .highlight-new { background-color: #fff8c5; }
   
@@ -262,23 +263,28 @@ const JOB_CATEGORIES = {
   "design": [
     { title: "UI/UX Designer", company: "Airbnb", location: "San Francisco, CA", keywords: ["Figma", "Sketch", "Prototyping", "User Research", "Wireframing"], desc: "Design intuitive user interfaces and experiences.", sponsor: true },
     { title: "Graphic Designer", company: "Nike", location: "Beaverton, OR", keywords: ["Adobe Creative Suite", "Photoshop", "Illustrator", "Branding", "Typography"], desc: "Create visual assets for marketing campaigns.", sponsor: true },
+    { title: "Junior Designer", company: "Local Agency", location: "Austin, TX", keywords: ["Canva", "Social Media", "Layout", "Print Design"], desc: "Assist with daily design tasks for local clients.", sponsor: false },
     { title: "Product Designer", company: "Spotify", location: "New York, NY", keywords: ["Product Design", "UX", "Visual Design", "Interaction Design", "Prototyping"], desc: "Design new features for the Spotify app.", sponsor: true },
     { title: "Visual Designer", company: "Apple", location: "Cupertino, CA", keywords: ["Visual Design", "Iconography", "Sketch", "Photoshop", "Detail Oriented"], desc: "Create stunning visuals for Apple products.", sponsor: true }
   ],
   "engineering": [
     { title: "Software Engineer Intern", company: "Google", location: "Mountain View, CA", keywords: ["Python", "Java", "C++", "Data Structures", "Algorithms", "Mobile App"], desc: "Design and implement software solutions.", sponsor: true },
     { title: "Data Analyst", company: "Meta", location: "Menlo Park, CA", keywords: ["SQL", "Python", "Tableau", "PowerBI", "Data Visualization"], desc: "Analyze data to drive product decisions.", sponsor: true },
+    { title: "Web Developer", company: "Small Biz Solutions", location: "Remote", keywords: ["HTML", "CSS", "JavaScript", "WordPress", "PHP"], desc: "Maintain websites for small business clients.", sponsor: false },
     { title: "Frontend Engineer", company: "Airbnb", location: "Remote", keywords: ["JavaScript", "TypeScript", "React", "HTML", "CSS"], desc: "Build modern web applications.", sponsor: true },
-    { title: "Machine Learning Engineer", company: "OpenAI", location: "San Francisco, CA", keywords: ["Deep Learning", "PyTorch", "Python", "LLM", "AI"], desc: "Train and deploy large language models.", sponsor: true }
+    { title: "Machine Learning Engineer", company: "OpenAI", location: "San Francisco, CA", keywords: ["Deep Learning", "PyTorch", "Python", "LLM", "AI"], desc: "Train and deploy large language models.", sponsor: true },
+    { title: "IT Support Specialist", company: "University Health", location: "Chicago, IL", keywords: ["Help Desk", "Troubleshooting", "Windows", "Networking"], desc: "Provide technical support to staff.", sponsor: false }
   ],
   "science": [
     { title: "Bioinformatics Associate", company: "Genentech", location: "South San Francisco, CA", keywords: ["Python", "R", "NGS", "Genomics", "Biology"], desc: "Analyze genomic data for drug discovery.", sponsor: true },
     { title: "Research Associate", company: "Pfizer", location: "Cambridge, MA", keywords: ["Lab Techniques", "PCR", "Cell Culture", "Data Analysis", "Biology"], desc: "Conduct experiments to support vaccine development.", sponsor: true },
-    { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations.", sponsor: false }
+    { title: "Lab Assistant", company: "University of Illinois", location: "Urbana, IL", keywords: ["Lab Safety", "Equipment Maintenance", "Data Entry", "Chemistry", "Biology"], desc: "Assist researchers with daily lab operations.", sponsor: false },
+    { title: "Science Tutor", company: "Varsity Tutors", location: "Remote", keywords: ["Teaching", "Biology", "Chemistry", "Communication"], desc: "Tutor high school students in science subjects.", sponsor: false }
   ],
   "agtech": [
     { title: "Precision Ag Intern", company: "John Deere", location: "Champaign, IL", keywords: ["Python", "GIS", "Data Analysis", "IoT", "Sensors"], desc: "Develop software for autonomous tractors and precision agriculture.", sponsor: true },
     { title: "R&D Intern", company: "Bayer Crop Science", location: "St. Louis, MO", keywords: ["Genetics", "R", "Statistics", "Field Research", "Biology"], desc: "Support breeding pipelines and genomic research.", sponsor: true },
+    { title: "Field Scout", company: "Crop Watchers", location: "Decatur, IL", keywords: ["Scouting", "Pest Management", "Data Collection", "Driving"], desc: "Monitor fields for pests and diseases.", sponsor: false },
     { title: "Digital Ag Intern", company: "Corteva", location: "Johnston, IA", keywords: ["Remote Sensing", "Machine Learning", "Python", "Satellite Imagery"], desc: "Analyze satellite data to optimize crop yields.", sponsor: true },
     { title: "Ag Engineering Intern", company: "ADM", location: "Decatur, IL", keywords: ["Process Engineering", "AutoCAD", "Manufacturing", "Supply Chain"], desc: "Optimize food processing facilities.", sponsor: true }
   ]
@@ -410,6 +416,18 @@ function analyzeResumeAndRenderJobs() {
         jobs.push(JOB_CATEGORIES[c][0]); 
     }
   });
+
+  // Ensure we have non-sponsoring jobs for the filter demo
+  const nonSponsoring = [];
+  Object.values(JOB_CATEGORIES).flat().forEach(j => {
+      if (j.sponsor === false) nonSponsoring.push(j);
+  });
+  // Shuffle non-sponsoring and take 2 unique ones that aren't already in jobs
+  const currentIds = new Set(jobs.map(j => j.title + j.company));
+  const extras = nonSponsoring.filter(j => !currentIds.has(j.title + j.company))
+                              .sort(() => 0.5 - Math.random())
+                              .slice(0, 2);
+  jobs.push(...extras);
 
   // Shuffle final list
   jobs = jobs.sort(() => 0.5 - Math.random());
@@ -599,110 +617,236 @@ async function runTailoring() {
 }
 
 function generateTailoredResume() {
+  if (!currentResume || !currentJob) return;
+
   // Deep copy resume
   const d = JSON.parse(JSON.stringify(currentResume));
+  
+  // Ensure arrays exist to prevent crashes
+  d.edu = d.edu || [];
+  d.exps = d.exps || [];
+  d.projects = d.projects || [];
+  d.activities = d.activities || [];
+  d.skills = d.skills || [];
+
   const missing = [];
-  currentJob.keywords.forEach(k => {
-     if (!JSON.stringify(d).toLowerCase().includes(k.toLowerCase())) missing.push(k);
-  });
+  if (currentJob.keywords) {
+    currentJob.keywords.forEach(k => {
+       if (!JSON.stringify(d).toLowerCase().includes(k.toLowerCase())) missing.push(k);
+    });
+  }
   
   // Inject keywords into Skills (Mock Tailoring)
   if (missing.length > 0) {
-     d.skills.unshift({ name: "Targeted Skills (" + currentJob.company + ")", level: missing.join(', ') });
+     // Create a visible string for the skills
+     const newSkillName = `Targeted Skills for ${currentJob.company}: ${missing.join(', ')}`;
+     d.skills.unshift({ name: newSkillName, level: "Targeted" });
   }
   
   tailoredResumeData = d;
   
-  // Render Resume (Reusing logic from resume_form.html, simplified here)
+  // Render Resume - STRICTLY following resume_form.html structure
   const root = document.getElementById('tailoredResumePreview');
+  if (!root) return;
   root.innerHTML = '';
   
-  const h1 = document.createElement('h1'); h1.innerText = d.name; root.appendChild(h1);
-  const info = document.createElement('div'); info.className = 'contact'; 
+  // Helper for Elements
+  const el = (tag, cls) => {
+      const e = document.createElement(tag);
+      if(cls) e.className = cls;
+      return e;
+  };
+
+  // 1. Header
+  const h1 = el('h1'); 
+  h1.innerText = d.name || 'YOUR NAME'; 
+  root.appendChild(h1);
   
-  // Reconstruct Contact Info properly
+  const info = el('div', 'contact-info'); 
   const contactParts = [];
-  if (d.email) contactParts.push(d.email);
   if (d.phone) contactParts.push(d.phone);
+  if (d.email) contactParts.push(d.email);
   if (d.linkedin) contactParts.push(d.linkedin);
-  if (d.portfolio) contactParts.push(d.portfolio);
+  if (d.github) contactParts.push(d.github);
+  if (d.website) contactParts.push(d.website);
   
-  info.innerText = contactParts.join(' | '); root.appendChild(info);
+  info.innerText = contactParts.join(' | '); 
+  root.appendChild(info);
   
-  const addSec = (t) => { const h = document.createElement('h3'); h.innerText = t; root.appendChild(h); };
-  const addRow = (l, r) => { 
-     const row = document.createElement('div'); row.className='row';
-     row.innerHTML = `<span>${l}</span><span>${r}</span>`;
+  // Helper for Sections
+  const addSec = (t) => { 
+      const h = el('h3'); 
+      h.innerText = t; 
+      root.appendChild(h); 
+  };
+  
+  // Helper for Rows (Left/Right align) matching resume_form.html
+  const addRow = (l, r, bold = false, italic = false) => { 
+     const row = el('div', 'resume-row');
+     if(bold) row.classList.add('resume-bold');
+     if(italic) row.classList.add('resume-italic');
+     
+     const left = el('span'); left.innerText = l; row.appendChild(left);
+     const right = el('span'); right.innerText = r; row.appendChild(right);
      root.appendChild(row);
   };
   
-  // Education
-  if(d.edu.length) { addSec('EDUCATION'); d.edu.forEach(e => addRow(`${e.school}, ${e.city}`, `${e.degree}, ${e.period}`)); }
+  // 2. EDUCATION
+  if(d.edu && d.edu.length) { 
+      addSec('EDUCATION'); 
+      d.edu.forEach(e => {
+          // Line 1: School - Location (Bold)
+          addRow(e.school || '', e.city || '', true, false);
+          // Line 2: Degree/Major - Period (Italic)
+          const degreeInfo = [e.degree, e.major].filter(Boolean).join(', ');
+          addRow(degreeInfo, e.period || '', false, true);
+          // GPA
+          if(e.gpa) {
+             const gpaDiv = el('div', 'resume-sub');
+             gpaDiv.innerText = `GPA: ${e.gpa}`;
+             root.appendChild(gpaDiv);
+          }
+      });
+      // Relevant Courses (Global field in data)
+      if (d.courses) {
+          const coursesDiv = el('div', 'resume-sub');
+          coursesDiv.style.marginTop = '2px';
+          coursesDiv.innerHTML = `<strong>Relevant Courses:</strong> ${d.courses}`;
+          root.appendChild(coursesDiv);
+      }
+  }
   
-  // Experience
-  if(d.exps.length) { 
+  // 3. PROFESSIONAL EXPERIENCE
+  if(d.exps && d.exps.length) { 
     addSec('PROFESSIONAL EXPERIENCE'); 
-    d.exps.forEach(e => {
-        addRow(`${e.company} - ${e.title}`, e.period);
-        const ul = document.createElement('ul');
-        e.desc.split('\n').forEach(li => { if(li.trim()) ul.innerHTML += `<li>${li.replace(/^- /, '')}</li>`; });
-        root.appendChild(ul);
+    d.exps.forEach((e, i) => {
+        // Line 1: Company - Location (Bold)
+        addRow(e.company || '', e.location || '', true, false);
+        // Line 2: Title - Period (Italic)
+        addRow(e.title || '', e.period || '', false, true);
+        
+        if (e.desc) {
+            const ul = el('ul');
+            let descText = e.desc;
+            
+            // Tailoring: Add a sentence to the first experience if it's relevant
+            if (i === 0 && missing.length > 0) {
+                 descText = `Applied ${missing[0]} techniques to optimize workflows, aligning with ${currentJob.company} standards.\n` + descText;
+            }
+
+            descText.split('\n').forEach(li => { 
+                if(li.trim()) {
+                    const item = el('li');
+                    // Highlight the new tailored line
+                    if (li.includes(missing[0]) && li.includes(currentJob.company)) {
+                        item.className = 'highlight-new';
+                    }
+                    item.innerText = li.replace(/^- /, '');
+                    ul.appendChild(item);
+                }
+            });
+            root.appendChild(ul);
+        }
     });
   }
   
-  // Projects (Inject Keywords into first project description for demo)
-  if(d.projects.length) {
-    addSec('PROJECTS');
+  // 4. PROJECTS & OUTSIDE EXPERIENCE
+  if(d.projects && d.projects.length) {
+    addSec('PROJECTS & OUTSIDE EXPERIENCE');
     d.projects.forEach((p, i) => {
-        addRow(p.name, p.period);
-        const ul = document.createElement('ul');
-        let desc = p.desc;
-        // Mock injection
-        if (i === 0 && missing.length > 0) {
-            desc += `\n- Optimized project using ${missing.slice(0, 3).join(', ')} to enhance performance.`;
+        // Line 1: Name - Location (Bold)
+        addRow(p.name || '', p.location || '', true, false);
+        // Line 2: Title - Period (Italic)
+        addRow(p.title || '', p.period || '', false, true);
+        
+        // Line 3: Stack | Link (Italic)
+        let subStack = p.stack || '';
+        if(p.link) subStack += (subStack ? ` | ${p.link}` : p.link);
+        
+        if(subStack) {
+            const row = el('div', 'resume-row');
+            const left = el('span'); 
+            left.innerHTML = `<em>${subStack}</em>`; 
+            row.appendChild(left);
+            root.appendChild(row);
         }
+        
+        const ul = el('ul');
+        let desc = p.desc || '';
+        // Mock injection for first project
+        if (i === 0 && missing.length > 0) {
+            desc += `\n- Integrated ${missing.slice(0, 2).join(' and ')} to enhance project scalability.`;
+        }
+        
         desc.split('\n').forEach(li => { 
             if(li.trim()) {
-                // Highlight injected line
-                const isNew = li.includes('Optimized project using');
-                ul.innerHTML += `<li class="${isNew ? 'highlight-new' : ''}">${li.replace(/^- /, '')}</li>`; 
+                const isNew = li.includes('Integrated') && li.includes('scalability');
+                const item = el('li');
+                if(isNew) item.className = 'highlight-new';
+                item.innerText = li.replace(/^- /, '');
+                ul.appendChild(item);
             }
         });
         root.appendChild(ul);
     });
   }
   
-  // Skills
-  if(d.skills.length) {
-      addSec('SKILLS');
-      const div = document.createElement('div');
-      
-      // Separate skills by category if possible, or just list them
-      // In this simplified view, we will just list them but try to group by name
-      d.skills.forEach(s => {
-          const isNew = s.name.startsWith('Targeted');
-          div.innerHTML += `<div class="${isNew ? 'highlight-new' : ''}" style="margin-bottom:4px"><b>${s.name}:</b> ${s.level}</div>`;
-      });
-      root.appendChild(div);
-  }
-
-  // Activities (Preserve original activities)
+  // 5. ACTIVITIES & LEADERSHIP
   if(d.activities && d.activities.length) {
-      addSec('LEADERSHIP & ACTIVITIES');
+      addSec('ACTIVITIES & LEADERSHIP');
       d.activities.forEach(a => {
-          const row = document.createElement('div'); row.className='row';
-          row.innerHTML = `<span>${a.name} - ${a.role}</span><span>${a.period}</span>`;
-          root.appendChild(row);
+          // Line 1: Org - Location (Bold)
+          addRow(a.org || '', a.location || '', true, false);
+          // Line 2: Role - Period (Italic)
+          addRow(a.role || '', a.period || '', false, true);
+          
+          if (a.desc) {
+              const ul = el('ul');
+              a.desc.split('\n').forEach(li => {
+                  if(li.trim()) {
+                      const item = el('li');
+                      item.innerText = li.replace(/^- /, '');
+                      ul.appendChild(item);
+                  }
+              });
+              root.appendChild(ul);
+          }
       });
   }
-
-  // Languages (Preserve original languages)
-  if(d.languages && d.languages.length) {
-      addSec('LANGUAGES');
-      const div = document.createElement('div');
-      d.languages.forEach(l => {
-          div.innerHTML += `<div><b>${l.language}:</b> ${l.proficiency}</div>`;
-      });
+  
+  // 6. SKILLS & INTERESTS
+  if((d.skills && d.skills.length) || d.languages || d.interests) {
+      addSec('SKILLS & INTERESTS');
+      const div = el('div', 'resume-sub');
+      
+      // Skills
+      if (d.skills && d.skills.length) {
+          const row = el('div');
+          // Map skills to text, highlighting the targeted ones
+          const skillsHtml = d.skills.map(s => {
+             const text = s.name; // resume_form.html only uses name
+             const isNew = text.startsWith('Targeted Skills');
+             return isNew ? `<span class="highlight-new">${text}</span>` : text;
+          }).join(', ');
+          
+          row.innerHTML = `<strong>Skills:</strong> ${skillsHtml}`;
+          div.appendChild(row);
+      }
+      
+      // Interests
+      if (d.interests) {
+           const row = el('div');
+           row.innerHTML = `<strong>Interests:</strong> ${d.interests}`;
+           div.appendChild(row);
+      }
+      
+      // Languages
+      if (d.languages) {
+           const row = el('div');
+           row.innerHTML = `<strong>Languages:</strong> ${d.languages}`;
+           div.appendChild(row);
+      }
+      
       root.appendChild(div);
   }
 }
@@ -710,34 +854,48 @@ function generateTailoredResume() {
 function generateCoverLetter() {
   const d = currentResume;
   const j = currentJob;
+  if (!d || !j) return; // Safety check
+
   const today = new Date().toLocaleDateString();
   
+  // Safe accessors
+  const school = (d.edu && d.edu[0] && d.edu[0].school) ? d.edu[0].school : 'my university';
+  const major = (d.edu && d.edu[0] && d.edu[0].major) ? d.edu[0].major : 'my field';
+  const skill = (d.skills && d.skills[0] && d.skills[0].name) ? d.skills[0].name : 'technical skills';
+  const prevComp = (d.exps && d.exps[0] && d.exps[0].company) ? d.exps[0].company : 'previous projects';
+  
+  // Job keywords safety
+  const jobKeywords = j.keywords && j.keywords.length ? j.keywords : ['relevant skills'];
+  const topSkill = jobKeywords[0];
+  const top3Skills = jobKeywords.slice(0, 3).join(', ');
+
   const text = `
-${d.name}
-${d.email} | ${d.phone}
+${d.name || 'Applicant Name'}
+${d.email || ''} | ${d.phone || ''}
 
 ${today}
 
 Hiring Manager
 ${j.company}
-${j.location}
+${j.location || ''}
 
 Dear Hiring Manager,
 
-I am writing to express my strong interest in the ${j.title} position at ${j.company}, as advertised. With my background in ${d.edu[0]?.major || 'Engineering'} from ${d.edu[0]?.school || 'University'}, and my hands-on experience in ${d.skills[0]?.name || 'Technology'}, I am confident in my ability to contribute effectively to your team.
+I am writing to express my strong interest in the ${j.title} position at ${j.company}, as advertised. With my background in ${major} from ${school}, and my hands-on experience in ${skill}, I am confident in my ability to contribute effectively to your team.
 
-I have long admired ${j.company}'s work in the industry, particularly its commitment to innovation. In my previous role at ${d.exps[0]?.company || 'my university'}, I honed my skills in ${j.keywords.slice(0,3).join(', ')}, which aligns perfectly with the requirements for this role.
+I have long admired ${j.company}'s work in the industry, particularly its commitment to innovation. In my previous role at ${prevComp}, I honed my skills in ${top3Skills}, which aligns perfectly with the requirements for this role.
 
-Specifically, I have experience using ${j.keywords[0]} to solve complex problems, a skill I am eager to apply at ${j.company}. I am a quick learner and thrive in collaborative environments.
+Specifically, I have experience using ${topSkill} to solve complex problems, a skill I am eager to apply at ${j.company}. I am a quick learner and thrive in collaborative environments.
 
 Thank you for considering my application. I look forward to the possibility of discussing how my skills and experiences align with the needs of your team.
 
 Sincerely,
 
-${d.name}
+${d.name || 'Applicant Name'}
   `;
   
-  document.getElementById('coverLetterPreview').innerText = text.trim();
+  const el = document.getElementById('coverLetterPreview');
+  if (el) el.innerText = text.trim();
   tailoredCoverLetterText = text.trim();
   
   // Update Buttons
@@ -747,14 +905,15 @@ ${d.name}
 function generateNetworkingNote() {
   const d = currentResume;
   const j = currentJob;
-  
+  if (!d || !j) return;
+
   // Extract a key project or skill to make it specific
-  const keySkill = j.keywords[0] || "Python";
-  const university = d.edu[0]?.school || "UIUC";
-  const major = d.edu[0]?.major || "Engineering";
+  const keySkill = (j.keywords && j.keywords[0]) ? j.keywords[0] : "relevant skills";
+  const university = (d.edu && d.edu[0] && d.edu[0].school) ? d.edu[0].school : "my university";
+  const major = (d.edu && d.edu[0] && d.edu[0].major) ? d.edu[0].major : "my field";
 
   const text = `
-SUBJECT: Student Inquiry: ${j.title} role - ${d.name}
+SUBJECT: Student Inquiry: ${j.title} role - ${d.name || 'Student'}
 
 Hi [Hiring Manager Name/Alumni],
 
@@ -766,11 +925,12 @@ I would appreciate the opportunity to briefly connect and learn more about your 
 
 Best regards,
 
-${d.name}
+${d.name || 'Student'}
 [Link to Portfolio/LinkedIn]
   `;
 
-  document.getElementById('networkingPreview').innerText = text.trim();
+  const el = document.getElementById('networkingPreview');
+  if (el) el.innerText = text.trim();
   networkingNoteText = text.trim();
 }
 
