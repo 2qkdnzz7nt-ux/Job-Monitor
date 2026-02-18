@@ -21,8 +21,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
 .btn-primary{color:#fff;background-color:#2da44e;border-color:rgba(27,31,35,0.15)}
 .btn-outline{color:#24292f;background-color:#f6f8fa;border-color:rgba(27,31,35,0.15)}
 .btn:hover{opacity:0.9}
-.search-box{display:flex;gap:10px;margin-bottom:20px}
-.search-input{flex:1;padding:8px 12px;border:1px solid #d0d7de;border-radius:6px;font-size:14px}
+.search-box{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;padding:8px 12px;border:1px solid #d0d7de;border-radius:6px;font-size:14px;min-width: 200px}
 .tag-cloud{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .tag-section{margin-bottom:12px}
 .tag-title{font-size:12px;font-weight:600;color:#57606a;margin-bottom:6px;display:block}
@@ -69,14 +69,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,san
           <button id="editTagsBtn" onclick="toggleEditMode()" class="btn btn-outline" style="font-size:12px;padding:4px 10px">Edit Tags ✏️</button>
         </div>
         
-        <div class="search-box" style="align-items:center">
+        <div class="search-box">
           <input type="text" id="keywords" class="search-input" value="Software Engineer Intern" placeholder="e.g. Data Scientist Intern">
-          <input type="text" id="location" class="search-input" value="United States" placeholder="Location" style="max-width:140px">
-          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:8px;font-size:13px;user-select:none;background:#ffebe9;padding:4px 8px;border-radius:6px;border:1px solid #cf222e">
+          <input type="text" id="location" class="search-input" value="United States" placeholder="Location" style="max-width:140px;flex:none">
+          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:13px;user-select:none;background:#ffebe9;padding:4px 8px;border-radius:6px;border:1px solid #cf222e">
             <input type="checkbox" id="visaFilter" style="cursor:pointer;accent-color:#cf222e">
             <label for="visaFilter" style="cursor:pointer;color:#cf222e;font-weight:700" title="Automatically add 'visa sponsorship' to your search">🛂 Visa Only</label>
           </div>
-          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-size:13px;user-select:none;background:#e6f7ff;padding:4px 8px;border-radius:6px;border:1px solid #0969da">
+          <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:13px;user-select:none;background:#e6f7ff;padding:4px 8px;border-radius:6px;border:1px solid #0969da">
             <input type="checkbox" id="undergradFilter" style="cursor:pointer;accent-color:#0969da">
             <label for="undergradFilter" style="cursor:pointer;color:#0969da;font-weight:700" title="Filter for undergraduate/bachelor roles">🎓 Undergrad</label>
           </div>
