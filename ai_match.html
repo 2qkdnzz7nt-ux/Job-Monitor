@@ -89,27 +89,31 @@
   
   @media print {
      @page { margin: 0.4in; size: Letter; }
-     body { background-color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; height: auto !important; }
      
-     /* Hide everything by default using visibility to avoid layout issues */
-     body * { visibility: hidden; }
-     
-     /* Only show the print area, moved to top level logically via fixed positioning/absolute */
-     #printArea, #printArea * { 
-       visibility: visible !important; 
+     /* Ensure body settings for print */
+     body { 
+        background-color: #fff; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact; 
+        overflow: visible !important; 
+        height: auto !important; 
      }
      
-     #printArea { 
-       position: absolute !important; 
-       top: 0 !important; 
-       left: 0 !important; 
-       width: 100% !important; 
-       margin: 0 !important; 
-       padding: 0 !important; 
+     /* Hide all top-level elements by default */
+     body > * { display: none !important; }
+     
+     /* Only show the specific print container */
+     #print-root { 
+       display: block !important; 
+       position: absolute !important;
+       top: 0 !important;
+       left: 0 !important;
+       width: 100% !important;
+       margin: 0 !important;
+       padding: 0 !important;
        background: white;
-       overflow: visible !important;
      }
- 
+
      /* Reset preview styles for print */
      .resume-preview { 
        width: 100% !important; 
@@ -242,6 +246,8 @@
   <h3 id="loadingText">Analyzing...</h3>
   <div style="color:#57606a; font-size:14px; margin-top:8px" id="loadingSub">Extracting keywords</div>
 </div>
+
+<div id="print-root"></div>
 
 <script>
 // --- Data & State ---
@@ -1022,14 +1028,25 @@ function saveToHistory() {
 
 function printContent(elementId) {
   const content = document.getElementById(elementId);
-  const originalId = content.id;
+  const printRoot = document.getElementById('print-root');
   
-  // Assign ID for print media query
-  content.id = 'printArea';
+  if (!content || !printRoot) return;
+  
+  // Clone the content to print
+  printRoot.innerHTML = '';
+  const clone = content.cloneNode(true);
+  clone.removeAttribute('id'); // Remove ID to avoid duplicates
+  
+  printRoot.appendChild(clone);
+  
   window.print();
   
-  // Restore ID
-  content.id = originalId;
+  // Clean up after print dialog closes
+  const cleanup = () => {
+      printRoot.innerHTML = '';
+      window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
 }
 
 function copyText(text) {
