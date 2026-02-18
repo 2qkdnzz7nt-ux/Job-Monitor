@@ -66,16 +66,17 @@
   .tab { padding: 8px 16px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; font-size: 14px; color: #57606a; }
   .tab.active { background: #fff; border-color: #d0d7de; border-bottom-color: #fff; font-weight: 600; color: #24292f; margin-bottom: -1px; }
   
-  .resume-preview { font-family: "Times New Roman", serif; padding: 40px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; min-height: 800px; font-size: 12pt; line-height: 1.5; color: #000; }
-  .resume-preview h1 { font-size: 24pt; margin: 0 0 12px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-  .resume-preview .contact-info { text-align: center; margin-bottom: 20px; font-size: 11pt; }
-  .resume-preview h3 { text-transform: uppercase; font-size: 12pt; margin: 18px 0 8px; border-bottom: 1px solid #000; padding-bottom: 4px; letter-spacing: 0.5px; font-weight: bold; }
-  .resume-preview ul { margin: 4px 0 0 32px; padding: 0; }
-  .resume-preview li { margin: 3px 0; font-size: 12pt; }
+  .resume-preview { font-family: "Times New Roman", serif; padding: 40px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; min-height: 800px; font-size: 11pt; line-height: 1.35; color: #000; }
+  .resume-preview h1 { font-size: 22pt; margin: 0 0 8px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+  .resume-preview .contact-info { text-align: center; margin-bottom: 16px; font-size: 10pt; }
+  .resume-preview h3 { text-transform: uppercase; font-size: 11pt; margin: 16px 0 6px; border-bottom: 1px solid #000; padding-bottom: 2px; letter-spacing: 0.5px; font-weight: bold; }
+  .resume-preview ul { margin: 2px 0 0 32px; padding: 0; }
+  .resume-preview li { margin: 2px 0; font-size: 11pt; }
   .resume-preview .resume-row { display: flex; justify-content: space-between; align-items: baseline; }
   .resume-preview .resume-bold { font-weight: bold; }
   .resume-preview .resume-italic { font-style: italic; }
-  .resume-preview .resume-sub { margin-bottom: 4px; font-size: 12pt; }
+  .resume-preview .resume-sub { margin-bottom: 2px; font-size: 11pt; }
+  .resume-item { margin-bottom: 4px; }
   
   .highlight-new { background-color: #fff8c5; }
   
@@ -87,7 +88,7 @@
   .empty-state { text-align: center; padding: 40px; color: #57606a; }
   
   @media print {
-     @page { margin: 0.75in; size: Letter; }
+     @page { margin: 0.6in; size: Letter; }
      body { background-color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; height: auto !important; }
      
      /* Hide everything by default using visibility to avoid layout issues */
@@ -117,16 +118,17 @@
        padding: 0 !important; 
        box-shadow: none !important; 
        border: none !important;
-       font-size: 12pt !important;
-       line-height: 1.5 !important;
+       font-size: 11pt !important;
+       line-height: 1.35 !important;
      }
  
-     .resume-preview h1 { font-size: 24pt !important; margin-bottom: 12px !important; }
-     .resume-preview h3 { font-size: 12pt !important; margin: 18px 0 8px !important; }
-     .resume-preview .contact-info { margin-bottom: 20px !important; font-size: 11pt !important; }
-     .resume-preview ul { margin-top: 4px !important; margin-bottom: 4px !important; }
-     .resume-preview li { margin: 3px 0 !important; }
-     .resume-preview .resume-sub { margin-bottom: 4px !important; font-size: 12pt !important; }
+     .resume-preview h1 { font-size: 22pt !important; margin-bottom: 8px !important; }
+     .resume-preview h3 { font-size: 11pt !important; margin: 14px 0 6px !important; }
+     .resume-preview .contact-info { margin-bottom: 12px !important; font-size: 10pt !important; }
+     .resume-preview ul { margin-top: 2px !important; margin-bottom: 2px !important; }
+     .resume-preview li { margin: 2px 0 !important; }
+     .resume-preview .resume-sub { margin-bottom: 2px !important; font-size: 11pt !important; }
+     .resume-item { page-break-inside: avoid; margin-bottom: 4px; }
      
      /* Prevent page breaks inside items */
      .item, li, p { page-break-inside: avoid; }
@@ -663,31 +665,33 @@ function generateTailoredResume() {
     };
     
     // Helper for Rows (Left/Right align) matching resume_form.html
-    const addRow = (l, r, bold = false, italic = false) => { 
+    const addRow = (container, l, r, bold = false, italic = false) => { 
        const row = el('div', 'resume-row');
        if(bold) row.classList.add('resume-bold');
        if(italic) row.classList.add('resume-italic');
        
        const left = el('span'); left.innerText = l; row.appendChild(left);
        const right = el('span'); right.innerText = r; row.appendChild(right);
-       root.appendChild(row);
+       container.appendChild(row);
     };
     
     // 2. EDUCATION
     if(d.edu && d.edu.length) { 
         addSec('EDUCATION'); 
         d.edu.forEach(e => {
+            const item = el('div', 'resume-item');
             // Line 1: School - Location (Bold)
-            addRow(e.school || '', e.city || '', true, false);
+            addRow(item, e.school || '', e.city || '', true, false);
             // Line 2: Degree/Major - Period (Italic)
             const degreeInfo = [e.degree, e.major].filter(Boolean).join(', ');
-            addRow(degreeInfo, e.period || '', false, true);
+            addRow(item, degreeInfo, e.period || '', false, true);
             // GPA
             if(e.gpa) {
                const gpaDiv = el('div', 'resume-sub');
                gpaDiv.innerText = `GPA: ${e.gpa}`;
-               root.appendChild(gpaDiv);
+               item.appendChild(gpaDiv);
             }
+            root.appendChild(item);
         });
         // Relevant Courses (Global field in data)
         if (d.courses) {
@@ -702,10 +706,11 @@ function generateTailoredResume() {
     if(d.exps && d.exps.length) { 
       addSec('PROFESSIONAL EXPERIENCE'); 
       d.exps.forEach((e, i) => {
+          const item = el('div', 'resume-item');
           // Line 1: Company - Location (Bold)
-          addRow(e.company || '', e.location || '', true, false);
+          addRow(item, e.company || '', e.location || '', true, false);
           // Line 2: Title - Period (Italic)
-          addRow(e.title || '', e.period || '', false, true);
+          addRow(item, e.title || '', e.period || '', false, true);
           
           if (e.desc) {
               const ul = el('ul');
@@ -718,17 +723,18 @@ function generateTailoredResume() {
 
               descText.split('\n').forEach(li => { 
                   if(li.trim()) {
-                      const item = el('li');
+                      const liEl = el('li');
                       // Highlight the new tailored line
                       if (li.includes(missing[0]) && li.includes(currentJob.company)) {
-                          item.className = 'highlight-new';
+                          liEl.className = 'highlight-new';
                       }
-                      item.innerText = li.replace(/^- /, '');
-                      ul.appendChild(item);
+                      liEl.innerText = li.replace(/^- /, '');
+                      ul.appendChild(liEl);
                   }
               });
-              root.appendChild(ul);
+              item.appendChild(ul);
           }
+          root.appendChild(item);
       });
     }
     
@@ -736,10 +742,11 @@ function generateTailoredResume() {
     if(d.projects && d.projects.length) {
       addSec('PROJECTS & OUTSIDE EXPERIENCE');
       d.projects.forEach((p, i) => {
+          const item = el('div', 'resume-item');
           // Line 1: Name - Location (Bold)
-          addRow(p.name || '', p.location || '', true, false);
+          addRow(item, p.name || '', p.location || '', true, false);
           // Line 2: Title - Period (Italic)
-          addRow(p.title || '', p.period || '', false, true);
+          addRow(item, p.title || '', p.period || '', false, true);
           
           // Line 3: Stack | Link (Italic)
           let subStack = p.stack || '';
@@ -750,7 +757,7 @@ function generateTailoredResume() {
               const left = el('span'); 
               left.innerHTML = `<em>${subStack}</em>`; 
               row.appendChild(left);
-              root.appendChild(row);
+              item.appendChild(row);
           }
           
           const ul = el('ul');
@@ -763,13 +770,14 @@ function generateTailoredResume() {
           desc.split('\n').forEach(li => { 
               if(li.trim()) {
                   const isNew = li.includes('Integrated') && li.includes('scalability');
-                  const item = el('li');
-                  if(isNew) item.className = 'highlight-new';
-                  item.innerText = li.replace(/^- /, '');
-                  ul.appendChild(item);
+                  const liEl = el('li');
+                  if(isNew) liEl.className = 'highlight-new';
+                  liEl.innerText = li.replace(/^- /, '');
+                  ul.appendChild(liEl);
               }
           });
-          root.appendChild(ul);
+          item.appendChild(ul);
+          root.appendChild(item);
       });
     }
     
@@ -777,22 +785,24 @@ function generateTailoredResume() {
     if(d.activities && d.activities.length) {
         addSec('ACTIVITIES & LEADERSHIP');
         d.activities.forEach(a => {
+            const item = el('div', 'resume-item');
             // Line 1: Org - Location (Bold)
-            addRow(a.org || '', a.location || '', true, false);
+            addRow(item, a.org || '', a.location || '', true, false);
             // Line 2: Role - Period (Italic)
-            addRow(a.role || '', a.period || '', false, true);
+            addRow(item, a.role || '', a.period || '', false, true);
             
             if (a.desc) {
                 const ul = el('ul');
                 a.desc.split('\n').forEach(li => {
                     if(li.trim()) {
-                        const item = el('li');
-                        item.innerText = li.replace(/^- /, '');
-                        ul.appendChild(item);
+                        const liEl = el('li');
+                        liEl.innerText = li.replace(/^- /, '');
+                        ul.appendChild(liEl);
                     }
                 });
-                root.appendChild(ul);
+                item.appendChild(ul);
             }
+            root.appendChild(item);
         });
     }
     
