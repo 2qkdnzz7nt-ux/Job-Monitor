@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="favicon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Job Search Journal</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f6f8fa;
+            color: #24292f;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #d0d7de;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid rgba(27, 31, 36, 0.15);
+            border-radius: 6px;
+            color: #24292f;
+            background-color: #f6f8fa;
+            text-decoration: none;
+            transition: .2s cubic-bezier(0.3, 0, 0.5, 1);
+        }
+        .btn:hover {
+            background-color: #f3f4f6;
+            border-color: rgba(27, 31, 36, 0.15);
+        }
+        .btn.primary {
+            color: #ffffff;
+            background-color: #2da44e;
+            border-color: rgba(27, 31, 36, 0.15);
+        }
+        .btn.primary:hover {
+            background-color: #2c974b;
+        }
+        .btn.danger {
+            color: #cf222e;
+            border-color: rgba(27, 31, 36, 0.15);
+        }
+        .btn.danger:hover {
+            background-color: #ffebe9;
+            border-color: rgba(27, 31, 36, 0.15);
+        }
+        
+        /* New Entry Section */
+        .new-entry-card {
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .new-entry-card textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #24292f;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .new-entry-card textarea:focus {
+            border-color: #0969da;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+        }
+
+        /* Entries List */
+        .entry-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .journal-entry {
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+        }
+        .entry-meta {
+            font-size: 12px;
+            color: #57606a;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .entry-content {
+            font-size: 15px;
+            white-space: pre-wrap;
+            color: #1f2328;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #57606a;
+            font-style: italic;
+        }
+    </style>
+    <script>
+        // Auth check
+        if (localStorage.getItem('usjobsearch_auth_v1') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        const STORAGE_KEY = 'usjobsearch_journal_entries';
+
+        function getEntries() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveEntries(entries) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        }
+
+        function addEntry() {
+            const textarea = document.getElementById('newEntryContent');
+            const content = textarea.value.trim();
+            
+            if (!content) return;
+
+            const entries = getEntries();
+            const newEntry = {
+                id: Date.now().toString(),
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+
+            entries.unshift(newEntry); // Add to beginning
+            saveEntries(entries);
+            textarea.value = '';
+            renderEntries();
+        }
+
+        function deleteEntry(id) {
+            if (!confirm('确定要删除这条记录吗？')) return;
+            
+            const entries = getEntries();
+            const filtered = entries.filter(e => e.id !== id);
+            saveEntries(filtered);
+            renderEntries();
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function renderEntries() {
+            const entries = getEntries();
+            const listEl = document.getElementById('entryList');
+            
+            if (entries.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        还没有记录。写下你的第一条求职感悟吧！✨
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = entries.map(entry => `
+                <div class="journal-entry">
+                    <div class="entry-meta">
+                        <span>📅 ${formatDate(entry.timestamp)}</span>
+                        <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="deleteEntry('${entry.id}')">删除</button>
+                    </div>
+                    <div class="entry-content">${escapeHtml(entry.content)}</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderEntries);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✍️ My Job Search Journal</h1>
+            <a href="index.html" class="btn">🏠 Home</a>
+        </div>
+
+        <div class="new-entry-card">
+            <h3 style="margin-top:0; margin-bottom:12px; font-size:16px;">New Entry (记录感悟)</h3>
+            <textarea id="newEntryContent" placeholder="今天有什么新的发现？面试遇到了什么问题？记录下来..." spellcheck="false"></textarea>
+            <div style="text-align: right;">
+                <button class="btn primary" onclick="addEntry()">Add Entry</button>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Past Insights (往期回顾)</h3>
+        <div id="entryList" class="entry-list">
+            <!-- Entries will be loaded here -->
+        </div>
+    </div>
+</body>
+</html>
